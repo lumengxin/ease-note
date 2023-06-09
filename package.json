@@ -5,16 +5,20 @@
   "main": "src/entry.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron .",
-    "start-web": "webpack serve",
-    "build": "webpack"
+    "start": "webpack serve",
+    "build": "webpack",
+    "start:electron": "electron ."
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@wangeditor/editor": "^5.1.23",
+    "@wangeditor/editor-for-react": "^1.0.6",
+    "classnames": "^2.3.2",
     "electron": "^24.4.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-moveable": "^0.51.0"
   },
   "devDependencies": {
     "@babel/core": "^7.22.1",
@@ -23,6 +27,7 @@
     "@babel/preset-react": "^7.22.3",
     "@babel/preset-typescript": "^7.21.5",
     "@types/react": "^18.2.7",
+    "@types/react-dom": "^18.2.4",
     "babel-loader": "^9.1.2",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.8.1",

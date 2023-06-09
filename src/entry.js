@@ -15,7 +15,7 @@ const createWindow = () => {
   })
 
   // 加载 index.html
-  mainWindow.loadFile(path.join(__dirname, '../dist/index.html'))
+  mainWindow.loadFile(path.join(__dirname, '../public/index.html'))
 
   // 打开开发工具
   // mainWindow.webContents.openDevTools()
