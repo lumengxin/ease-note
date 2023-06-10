@@ -1,3 +1,3 @@
-import EaseNote from './Setting'
+import Setting from './Setting'
 
-export default EaseNote
+export default Setting

@@ -4,7 +4,7 @@ export enum THEME {
   WHITE = '#fff'
 }
 
-interface Shape {
+export interface Shape {
   x: number
   y: number
   w: number
@@ -38,15 +38,15 @@ export const DEFAULT_EDITOR: Note = {
 
 export const shapeSize = {
   "NOTE": {
-    x: 40,
-    y: 40
+    w: 40,
+    h: 40
   },
-  "SET": {
-    x: 40,
-    y: 40
+  "LIST": {
+    w: 300,
+    h: 540
   },
-  "CONFIG": {
-    x: 40,
-    y: 40
+  "SETTING": {
+    w: 756,
+    h: 400
   }
 }

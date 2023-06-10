@@ -5,6 +5,7 @@ import { DEFAULT_EDITOR, Note } from './utils/const'
 import { generateUUID, getMax } from './utils/tool'
 import localDriver from './utils/local'
 import localforage from "localforage";
+import Setting from './components/setting'
 
 const config = {
   background: '#fff', // 背景
@@ -18,6 +19,7 @@ const config = {
 function Main() {
   const [ notes, setNotes] = useState<Note[]>([DEFAULT_EDITOR])
   const [ isShowList, setIsShowList ] = useState<boolean>(true)
+  const [ isShowSetting, setIsShowSetting ] = useState<boolean>(false)
 
   const generateEditor = () => {
     let newEditor = JSON.parse(JSON.stringify(DEFAULT_EDITOR))
@@ -79,6 +81,12 @@ function Main() {
         onAdd={handleAdd} 
         onClose={() => handleList(false)} 
         onShow={(id) => handleVisible(id, true)} 
+        onSetting={() => setIsShowSetting(true)}
+      />
+
+      <Setting 
+        isShow={isShowSetting} 
+        onClose={() => setIsShowSetting(false)}
       />
     </>
   )

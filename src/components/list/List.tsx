@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import Panel from "../panel";
-import { generateUUID } from '../../utils/tool'
+import { generateUUID, generateCenterShape } from '../../utils/tool'
 import { Note } from '../../utils/const'
 import cn from 'classnames'
 
@@ -39,12 +39,7 @@ const List: FC<ListProps> = ({
     <div className={styles.list} style={{display: isShow ? "block" : "none", background: "blue"}}>
       <Panel 
         id={generateUUID("list")}
-        shape={{
-          x: 200,
-          y: 200,
-          w: 300,
-          h: 540
-        }}
+        shape={generateCenterShape('LIST')}
         zIndex={999}
         resizable={false}
         renderHeader={renderHeader}
