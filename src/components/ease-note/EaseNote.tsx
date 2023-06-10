@@ -2,6 +2,7 @@ import React, { FC, ReactElement, useRef, useState } from "react";
 import Header from '../header';
 import Editor from '../editor';
 import Drag from '../drag';
+import Panel from '../panel';
 import cn from 'classnames'
 
 import styles from './index.module.styl'
@@ -14,6 +15,10 @@ export interface EaseNoteProps {
   content: string
   onAdd: () => void
   onClose: () => void
+  onList: () => void
+  onDelete: () => void
+  onTheme: () => void
+  onEditorChange: () => void
 }
 
 interface Shape {
@@ -26,6 +31,10 @@ interface Shape {
 const EaseNote: FC<EaseNoteProps> = ({
   onAdd,
   onClose,
+  onList,
+  onDelete,
+  onTheme,
+  onEditorChange,
   id,
   shape,
   zIndex,
@@ -46,28 +55,33 @@ const EaseNote: FC<EaseNoteProps> = ({
     // setResizable(false)
   }
 
+  const renderHeader = () => {
+    return (
+      <div className={styles.options}>
+        <span onClick={onTheme}><i className="iconfont icon-theme"></i></span>
+        <span onClick={onDelete}><i className="iconfont icon-delete"></i></span>
+        <span onClick={onList}><i className="iconfont icon-list"></i></span>
+      </div>
+    )
+  }
+
   return (
     <div 
       className={styles.note}
     >
-      <div 
+      <Panel 
         id={id}
-        style={{position: 'absolute', left: shape.x + 'px', top: shape.y + 'px', width: shape.w + 'px', height: shape.h + 'px', zIndex}}
+        shape={shape}
+        zIndex={zIndex}
+        resizable={resizable}
+        renderHeader={renderHeader}
         onMouseEnter={handleMouseEnter}
         onMouseOut={handleMouseOver}
-        className={styles["note-container"]} 
+        onAdd={onAdd}
+        onClose={onClose}
       >
-        <Header onAdd={onAdd} onClose={onClose}>
-          <div className={styles.options}>
-            <span><i className="iconfont icon-theme"></i></span>
-            <span><i className="iconfont icon-delete"></i></span>
-            <span><i className="iconfont icon-list"></i></span>
-          </div>
-        </Header>
-        <Editor content={content} />
-      </div>
-
-      <Drag target={`#${id}`} draggable resizable={resizable} />
+        <Editor content={content} onChange={onEditorChange} />
+      </Panel>
     </div>
     
   )

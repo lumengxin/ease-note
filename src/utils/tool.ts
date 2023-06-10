@@ -4,3 +4,7 @@ export function generateUUID(prefix: string) {
     return v.toString(16);
   });
 }; 
+
+export function getMax(arr: any, key: string) {
+  return Math.max.apply(Math, arr.map((a) => a[key]))
+}

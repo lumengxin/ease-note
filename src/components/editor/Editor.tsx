@@ -23,13 +23,14 @@ function Editor({content, onChange}) {
 
     // 编辑器配置
     const editorConfig: Partial<IEditorConfig> = { 
-        placeholder: '请输入内容...',
+      placeholder: '请输入内容...',
     }
 
     const handleChange = (editor: IDomEditor) => {
       console.log('editor---', editor)
-      setHtml(editor.getHtml())
-      onChange && onChange()
+      const contents = editor.getHtml()
+      setHtml(contents)
+      onChange && onChange(contents, editor)
     }
 
     // 及时销毁 editor ，重要！

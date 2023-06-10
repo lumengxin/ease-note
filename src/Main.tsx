@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import EaseNote from './components/ease-note'
-import { DEFAULT_EDITOR } from './utils/const'
-import { generateUUID } from './utils/tool'
-
+import List from './components/list'
+import { DEFAULT_EDITOR, Note } from './utils/const'
+import { generateUUID, getMax } from './utils/tool'
+import localDriver from './utils/local'
+import localforage from "localforage";
 
 const config = {
   background: '#fff', // 背景
@@ -14,35 +16,70 @@ const config = {
 }
 
 function Main() {
-  const [ editors, setEditors] = useState([DEFAULT_EDITOR])
+  const [ notes, setNotes] = useState<Note[]>([DEFAULT_EDITOR])
+  const [ isShowList, setIsShowList ] = useState<boolean>(true)
 
   const generateEditor = () => {
-    // let newEditor = Object.assign({}, DEFAULT_EDITOR)
     let newEditor = JSON.parse(JSON.stringify(DEFAULT_EDITOR))
-    const maxZIndex = Math.max.apply(Math, editors.map((e) => e.zIndex))
+    const maxZIndex = getMax(notes, "zIndex")
     newEditor.id = generateUUID('note')
     newEditor.zIndex = maxZIndex + 1
     newEditor.shape.x = newEditor.shape.x + 20
     newEditor.shape.y = newEditor.shape.y + 20
     
-    const newEditors = [...editors, newEditor]
-    console.log('newEditor----', newEditors)
-    setEditors(newEditors)
+    const newEditors = [...notes, newEditor]
+    setNotes(newEditors)
   }
 
   const handleAdd = () => {
     generateEditor()
   }
 
-  const handleClose = (id: string) => {
-    console.log('id----', id)
-    const newEditors = editors.filter(e => e.id !== id)
-    setEditors(newEditors)
+  const handleList = (isShow: boolean) => {
+    setIsShowList(isShow)
   }
 
+  const handleVisible = (id: string, visible: boolean) => {
+    const ns = notes.map(n => n.id === id ? { ...n, visibility: visible } : n)
+    setNotes(ns)
+  }
+
+  const handleEditorChange = (id, html, editor) => {
+    // 插槽嵌入的Editor, 此作用域的notes不对
+    // console.log("notes---", notes)
+    // debugger
+    // const curNotes = notes.map(n => n.id === id ? { ...n, content: html } : n)
+    // console.log("ns----", curNotes)
+    // setNotes(curNotes)
+  }
+
+  useEffect(() => {
+    localforage.setItem("_notes_", notes, async () => {
+      console.log("setItem---", await localforage.getItem("_notes_"))
+    })
+  }, [ notes ])
+
+  const displayNotes = notes.filter(n => n.visibility)
   return (
     <>
-      {editors.map(e => <EaseNote key={e.id} {...e} onAdd={handleAdd} onClose={() => handleClose(e.id) } />)}
+      {displayNotes.map(e => 
+        <EaseNote
+          key={e.id}
+          {...e} 
+          onAdd={handleAdd} 
+          onClose={() => handleVisible(e.id, false)} 
+          onList={() => handleList(true)} 
+          onEditorChange={(html, editor) => handleEditorChange(e.id, html, editor)} 
+        />
+      )}
+
+      <List 
+        isShow={isShowList} 
+        notes={notes} 
+        onAdd={handleAdd} 
+        onClose={() => handleList(false)} 
+        onShow={(id) => handleVisible(id, true)} 
+      />
     </>
   )
   
