@@ -7,6 +7,8 @@ import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import styles from './index.module.styl'
 
+let flag = false
+
 function Editor({content, onChange}) {
     const [editor, setEditor] = useState<IDomEditor | null>(null)
     const [html, setHtml] = useState('')
@@ -27,10 +29,14 @@ function Editor({content, onChange}) {
     }
 
     const handleChange = (editor: IDomEditor) => {
-      console.log('editor---', editor)
-      const contents = editor.getHtml()
-      setHtml(contents)
-      onChange && onChange(contents, editor)
+      // 处理挂载时onChange被触发
+      if (flag) {
+        console.log('editor---111', editor)
+        const contents = editor.getHtml()
+        setHtml(contents)
+        onChange && onChange(contents, editor)
+      }
+      flag = true
     }
 
     // 及时销毁 editor ，重要！

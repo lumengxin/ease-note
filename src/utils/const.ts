@@ -30,7 +30,7 @@ export const DEFAULT_EDITOR: Note = {
     w: 260,
     h: 340
   },
-  content: 'write your stroy..',
+  content: '',
   theme: DEFAULT_THEME,
   zIndex: 1,
   visibility: true,

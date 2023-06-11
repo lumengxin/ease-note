@@ -18,7 +18,7 @@ const config = {
 
 function Main() {
   const [ notes, setNotes] = useState<Note[]>([DEFAULT_EDITOR])
-  const [ isShowList, setIsShowList ] = useState<boolean>(true)
+  const [ isShowList, setIsShowList ] = useState<boolean>(false)
   const [ isShowSetting, setIsShowSetting ] = useState<boolean>(false)
 
   const generateEditor = () => {
@@ -46,22 +46,28 @@ function Main() {
     setNotes(ns)
   }
 
-  const handleEditorChange = (id, html, editor) => {
-    // 插槽嵌入的Editor, 此作用域的notes不对
+  const handleEditorChange = async (id, html, editor) => {
+    // 插槽嵌入的Editor, 此作用域的notes不对 -> todo
     // console.log("notes---", notes)
     // debugger
-    // const curNotes = notes.map(n => n.id === id ? { ...n, content: html } : n)
-    // console.log("ns----", curNotes)
-    // setNotes(curNotes)
+    const realNotes = await _getItem("_notes_")
+    const curNotes = realNotes.map(n => n.id === id ? { ...n, content: html } : n)
+    console.log("ns----", curNotes)
+    setNotes(curNotes)
   }
 
   useEffect(() => {
     localforage.setItem("_notes_", notes, async () => {
-      console.log("setItem---", await localforage.getItem("_notes_"))
+      console.log("setItem---", await _getItem("_notes_"))
     })
   }, [ notes ])
 
+  const _getItem = async (key: string) => {
+    return await localforage.getItem(key)
+  }
+
   const displayNotes = notes.filter(n => n.visibility)
+
   return (
     <>
       {displayNotes.map(e => 
