@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react'
 import { Editor as WEditor, Toolbar as WToolbar } from '@wangeditor/editor-for-react'
-import { IDomEditor, IEditorConfig, IToolbarConfig } from '@wangeditor/editor'
+import { IDomEditor, IEditorConfig, IToolbarConfig, DomEditor } from '@wangeditor/editor'
 
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 import styles from './index.module.styl'
@@ -17,15 +17,18 @@ function Editor({content, onChange}) {
     const toolbarConfig: Partial<IToolbarConfig> = {
       toolbarKeys: [
         "headerSelect",
-        "|",
         "bold",
-        "italic"
+        "color",
+        "bulletedList",
+        "todo",
+        "insertTable",
+        "codeBlock",
       ]
     } 
 
     // 编辑器配置
     const editorConfig: Partial<IEditorConfig> = { 
-      placeholder: '请输入内容...',
+      placeholder: 'write your story...',
     }
 
     const handleChange = (editor: IDomEditor) => {
@@ -41,6 +44,12 @@ function Editor({content, onChange}) {
 
     // 及时销毁 editor ，重要！
     useEffect(() => {
+      // 获取toolbar配置
+      if (!editor) return
+      const toolbar = DomEditor.getToolbar(editor)
+      const curToolbarConfig = toolbar.getConfig()
+      console.log("toolbar ----- config", curToolbarConfig.toolbarKeys )
+
       return () => {
         if (editor == null) return
         editor.destroy()

@@ -1,11 +1,14 @@
 import React, { FC, ReactElement, useRef, useState } from "react";
-import Header from '../header';
 import Editor from '../editor';
-import Drag from '../drag';
 import Panel from '../panel';
-import cn from 'classnames'
+import { THEME } from "../../utils/const";
 
 import styles from './index.module.styl'
+
+let themes = []
+for (let t in THEME) {
+  themes.push({ key: t, value: THEME[t]})
+}
 
 export interface EaseNoteProps {
   mode?: 'browser' | 'desktop'
@@ -13,12 +16,15 @@ export interface EaseNoteProps {
   shape: Shape
   zIndex: number
   content: string
+  theme: THEME
   onAdd: () => void
   onClose: () => void
   onList: () => void
   onDelete: () => void
   onTheme: () => void
   onEditorChange: () => void
+  onDragEnd: () => void
+  onResizeEnd: () => void
 }
 
 interface Shape {
@@ -35,13 +41,17 @@ const EaseNote: FC<EaseNoteProps> = ({
   onDelete,
   onTheme,
   onEditorChange,
+  onDragEnd,
+  onResizeEnd,
   id,
   shape,
   zIndex,
   content,
+  theme,
   ...rest
 }) => {
   const [ resizable, setResizable ] = useState<boolean>(true)
+  const [ isShowTheme, setIsShowTheme ] = useState<boolean>(false)
   const targetRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<ReactElement>(null)
 
@@ -55,19 +65,36 @@ const EaseNote: FC<EaseNoteProps> = ({
     // setResizable(false)
   }
 
+  const handleThemeChange = (theme: THEME) => {
+    setIsShowTheme(false)
+
+    onTheme && onTheme(theme)
+  }
+
+
   const renderHeader = () => {
     return (
-      <div className={styles.options}>
-        <span onClick={onTheme}><i className="iconfont icon-theme"></i></span>
-        <span onClick={onDelete}><i className="iconfont icon-delete"></i></span>
-        <span onClick={onList}><i className="iconfont icon-list"></i></span>
-      </div>
+      <>
+        {isShowTheme ? (
+          <div className={styles.theme}>
+            {themes.map(t => <span className={styles.block} style={{background: t.value}} onClick={() => handleThemeChange(t.value)}>{t.key.slice(0, 2)}</span>)}
+          </div>
+        ) : (
+          <div className={styles.options}>
+            <span onClick={() => setIsShowTheme(true)}><i className="iconfont icon-theme"></i></span>
+            <span onClick={onDelete}><i className="iconfont icon-delete"></i></span>
+            <span onClick={onList}><i className="iconfont icon-list"></i></span>
+          </div>
+        )}
+      </>
+      
     )
   }
 
   return (
     <div 
       className={styles.note}
+      style={{ "--n-bg-color": theme, "--w-e-textarea-bg-color": theme, "--w-e-toolbar-bg-color": theme }}
     >
       <Panel 
         id={id}
@@ -79,6 +106,8 @@ const EaseNote: FC<EaseNoteProps> = ({
         onMouseOut={handleMouseOver}
         onAdd={onAdd}
         onClose={onClose}
+        onDragEnd={onDragEnd}
+        onResizeEnd={onResizeEnd}
       >
         <Editor content={content} onChange={onEditorChange} />
       </Panel>

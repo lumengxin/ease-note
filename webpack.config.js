@@ -3,23 +3,35 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
+const basePlugins = [
+  new CleanWebpackPlugin(),
+  new MiniCssExtractPlugin({
+    filename: "[name].css",
+    chunkFilename: "[id].css"
+  })
+]
+
+const isComponent = process.env.NODE_ENV === "component"
+const entry =  isComponent ? "./src/Main.tsx" : "./src/index.js"
+const output = isComponent ? {
+  path: path.resolve(__dirname, 'lib'),
+  library: '[name]', // 指定的就是你使用require时的模块名
+  libraryTarget: 'umd',
+  umdNamedDefine: true // 会对 UMD 的构建过程中的 AMD 模块进行命名。否则就使用匿名的 define
+} : { path: path.resolve(__dirname, 'dist'), }
+const plugins = isComponent ? basePlugins : [
+  new HtmlWebpackPlugin({
+    template: './public/index.html'
+  }),
+  ...basePlugins
+]
+
 module.exports = {
   // mode: "development",
   devtool: 'source-map',
-  entry: './src/index.js',
-  output: {
-    path: path.resolve(__dirname, 'dist')
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './public/index.html'
-    }),
-    new CleanWebpackPlugin(),
-    new MiniCssExtractPlugin({
-      filename: "[name].css",
-      chunkFilename: "[id].css"
-    })
-  ],
+  entry,
+  output,
+  plugins,
   devServer: {
     static: {
       directory: path.join(__dirname, 'public')
@@ -66,4 +78,8 @@ module.exports = {
       }
     ],
   },
+  // externals: {
+  //   "react": "React",
+  //   "react-dom": "ReactDom"
+  // }
 }

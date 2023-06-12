@@ -13,6 +13,7 @@ export interface ListProps {
   onClose: () => void
   onSetting: () => void
   onShow: (id: string) => void
+  onDelete: (id: string) => void
 }
 
 const List: FC<ListProps> = ({
@@ -21,7 +22,8 @@ const List: FC<ListProps> = ({
   onAdd,
   onClose,
   onSetting,
-  onShow
+  onShow,
+  onDelete
 }) => {
 
   const renderHeader = () => {
@@ -29,7 +31,7 @@ const List: FC<ListProps> = ({
       <div className={styles.header}>
         <div className={styles.title}>EaseNote</div>
         <div className={styles.setting} onClick={onSetting}>
-          <i className="iconfont icon-theme"></i>
+          <i className="iconfont icon-setting"></i>
         </div>
       </div>
     )
@@ -45,24 +47,25 @@ const List: FC<ListProps> = ({
         renderHeader={renderHeader}
         onAdd={onAdd}
         onClose={onClose}
+        className={styles.panel}
       >
         <div className={styles["list-container"]}>
           <div className={styles.search}>
             <input placeholder="请输入内容.." />
-            <button><i className="iconfont icon-theme"></i></button>
-            <button><i className="iconfont icon-theme"></i></button>
+            <button><i className="iconfont icon-close-copy"></i></button>
+            <button><i className="iconfont icon-search"></i></button>
           </div>
           <div className={styles.content}>
             {notes.map(n => (
               <div className={cn(styles.item, { [styles.hide]: !n.visibility })} onDoubleClick={() => onShow(n.id)}>
                 <div className={styles.top}>
+                  <div className={styles.time}>{n.updateTime ?? n.createTime}</div>
                   <div className={styles.option}>
-                    <span><i className="iconfont icon-theme"></i></span>
+                    <span onClick={() => onDelete(n.id)}><i className="iconfont icon-delete"></i></span>
                   </div>
-                  <div className={styles.time}>09/23</div>
                 </div>
                 <div className={styles.detail}>
-                  {n.content}
+                  <div dangerouslySetInnerHTML={{__html: n.content}}></div>
                 </div>
               </div>
             ))}

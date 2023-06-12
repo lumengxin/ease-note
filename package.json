@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve",
-    "build": "webpack",
+    "build": "npm run build:web && npm run build:component",
+    "build:web": "webpack",
+    "build:component": "webpack --node-env component",
     "start:electron": "electron ."
   },
   "author": "",

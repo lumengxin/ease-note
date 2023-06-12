@@ -1,29 +1,50 @@
 .list
-  .header
-    position relative
-    display: flex
-    justify-content: center
-    .title
-      font-size: 16px
-      font-weight: 400
-    .setting
-      position absolute
-      right: 4px
-  .list-container
-    padding 4px 8px
-    .search
-      margin 4px 0
-    .content
-      .item
-        margin 4px 0
-        max-height: 86px
-        background: gray
-        border-radius: 12px
-        &.hide
-          opacity .3
-        .top
-          display: flex
-          justify-content: flex-end
-          font-size: 12px
-          .option
-            margin-right: 8px
+  .panel
+    border 1px solid #999
+    .header
+      position relative
+      display: flex
+      justify-content: center
+      .title
+        font-size: 16px
+        font-weight: 400
+      .setting
+        position absolute
+        right: 4px
+    .list-container
+      height: 100%
+      display: flex
+      flex-direction: column
+      padding 4px 8px
+      .search
+        display flex
+        border: 1px solid #999
+        border-radius: 20px
+        height: 32px
+        line-height: 32px
+        padding-left: 4px
+        input
+          flex: 1
+          border-radius: 20px
+      .content
+        // flex 1
+        margin-top 8px
+        height: 440px
+        overflow-y: auto
+        .item
+          box-sizing: border-box
+          padding: 4px
+          margin 6px 0
+          max-height: 96px
+          background: #999
+          border-radius: 4px
+          overflow: hidden
+          &.hide
+            opacity .3
+          .top
+            display: flex
+            justify-content: space-between
+            font-size: 12px
+            margin-top: 2px
+            .option
+              margin-right: 8px

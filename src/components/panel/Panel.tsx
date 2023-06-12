@@ -2,6 +2,7 @@ import React, { FC } from "react";
 import Header from '../header';
 import Editor from '../editor';
 import Drag from '../drag';
+import cn from "classnames"
 
 import styles from './index.module.styl'
 
@@ -20,6 +21,9 @@ const Panel: FC<PanelProps> = ({
   onMouseOut,
   onAdd,
   onClose,
+  onDragEnd,
+  onResizeEnd,
+  className,
   children
 }) => {
 
@@ -30,7 +34,7 @@ const Panel: FC<PanelProps> = ({
         style={{position: 'absolute', left: shape.x + 'px', top: shape.y + 'px', width: shape.w + 'px', height: shape.h + 'px', zIndex}}
         onMouseEnter={onMouseEnter}
         onMouseOut={onMouseOut}
-        className={styles["panel-container"]} 
+        className={cn(styles["panel-container"], className)} 
       >
         <Header className={styles["header"]}  onAdd={onAdd} onClose={onClose}>
           {renderHeader && renderHeader()}
@@ -40,7 +44,7 @@ const Panel: FC<PanelProps> = ({
         </div>
       </div>
 
-      <Drag target={`#${id}`} draggable resizable={resizable} />
+      <Drag target={`#${id}`} draggable resizable={resizable} onDragEnd={onDragEnd} onResizeEnd={onResizeEnd} />
     </div>
   )
 }
