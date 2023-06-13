@@ -1,15 +1,23 @@
 {
   "name": "ease-note",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A device-independent, comfortable smart notebook",
-  "main": "src/entry.js",
+  "main": "src/output.js",
+  "module": "src/output.js",
+  "files": [
+    "dist",
+    "lib"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack serve",
-    "build": "npm run build:web && npm run build:component",
+    "build": "npm run build:web && npm run build:ui",
     "build:web": "webpack",
     "build:component": "webpack --node-env component",
-    "start:electron": "electron ."
+    "start:electron": "electron .",
+    "build-ts": "tsc -p tsconfig.build.json",
+    "clean": "rimraf ./lib",
+    "build:ui": "npm run clean && npm run build-ts"
   },
   "author": "",
   "license": "ISC",
@@ -19,9 +27,11 @@
     "classnames": "^2.3.2",
     "electron": "^24.4.0",
     "localforage": "^1.10.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "react-moveable": "^0.51.0"
+  },
+  "peerDependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.22.1",
@@ -36,8 +46,10 @@
     "css-loader": "^6.8.1",
     "html-webpack-plugin": "^5.5.1",
     "mini-css-extract-plugin": "^2.7.6",
+    "rimraf": "^5.0.1",
     "stylus": "^0.59.0",
     "stylus-loader": "^7.1.2",
+    "ts-loader": "^9.4.3",
     "typescript": "^5.0.4",
     "webpack": "^5.84.1",
     "webpack-dev-server": "^4.15.0"

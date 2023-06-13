@@ -183,9 +183,3 @@ function Main() {
 }
 
 export default Main
-
-export {
-  EaseNote,
-  List,
-  Setting
-}

@@ -15,9 +15,9 @@ const isComponent = process.env.NODE_ENV === "component"
 const entry =  isComponent ? "./src/Main.tsx" : "./src/index.js"
 const output = isComponent ? {
   path: path.resolve(__dirname, 'lib'),
-  library: '[name]', // 指定的就是你使用require时的模块名
-  libraryTarget: 'umd',
-  umdNamedDefine: true // 会对 UMD 的构建过程中的 AMD 模块进行命名。否则就使用匿名的 define
+  // library: '[name]', // 指定的就是你使用require时的模块名
+  // libraryTarget: 'umd',
+  // umdNamedDefine: true // 会对 UMD 的构建过程中的 AMD 模块进行命名。否则就使用匿名的 define
 } : { path: path.resolve(__dirname, 'dist'), }
 const plugins = isComponent ? basePlugins : [
   new HtmlWebpackPlugin({
@@ -57,7 +57,13 @@ module.exports = {
       {
         test: /\.(js|ts|jsx|tsx)?$/,
         use: [
-          'babel-loader'
+          'babel-loader',
+          // {
+          //   loader: 'ts-loader',
+          //   options: {
+          //     transpileOnly: true,
+          //   },
+          // }
         ],
         exclude: /node_modules/,
       },
@@ -78,8 +84,8 @@ module.exports = {
       }
     ],
   },
-  // externals: {
-  //   "react": "React",
-  //   "react-dom": "ReactDom"
-  // }
+  externals: {
+    "react": "React",
+    "react-dom": "ReactDom"
+  }
 }
