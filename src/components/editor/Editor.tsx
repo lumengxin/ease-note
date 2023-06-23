@@ -1,10 +1,8 @@
-// import '@wangeditor/editor/dist/css/style.css' // 引入 css
-
 import React, { useState, useEffect } from 'react'
 import { Editor as WEditor, Toolbar as WToolbar } from '@wangeditor/editor-for-react'
 import { IDomEditor, IEditorConfig, IToolbarConfig, DomEditor } from '@wangeditor/editor'
-
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
+
 import styles from './index.module.styl'
 
 let flag = false

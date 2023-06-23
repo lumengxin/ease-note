@@ -1,4 +1,5 @@
 /** editor **/
+/* 拖拽边框、点 */
 .moveable-control.moveable-origin, .moveable-control.moveable-direction {
   display: none;
 }
@@ -13,6 +14,7 @@
   margin-left: -14px;
 }
 
+/* 底部操作项 */
 .w-e-bar {
   font-size: 12px;
   padding: 0;
@@ -24,6 +26,11 @@
 }
 .w-e-bar-item button {
   padding: 0 2px;
+}
+
+/* 编辑区 */
+.w-e-text-container {
+  text-align: start;
 }
 
 

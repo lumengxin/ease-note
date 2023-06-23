@@ -1,6 +1,6 @@
 import React from 'react';
 import Moveable from "react-moveable";
-import { flushSync } from "react-dom";
+// import { flushSync } from "react-dom";
 
 import './index.module.styl'
 
@@ -69,7 +69,7 @@ const Drag = ({
       // isDisplaySnapDigit={true}
       // elementGuidelines={["#react", ".heart"]}
       checkInput={true}
-      flushSync={flushSync} 
+      // flushSync={flushSync} 
     />
   );
 }

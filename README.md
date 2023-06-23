@@ -44,3 +44,9 @@ electron, ts, react, webpack, cache, indexDB
 npm install -g cnpm --registry=https://registry.npm.taobao.org
 cnpm i electron
 ```
+
+2. npm link联调报错：Cannot read properties of null (reading 'useState')...
+
+https://github.com/facebook/react/issues/24928
+
+删除ease-note/node_modules, 注意软链接会作用到原文件；或者使用“peerDependencies”
