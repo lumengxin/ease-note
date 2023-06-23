@@ -61,14 +61,16 @@ function Editor({content, onChange}) {
 
     return (
       <div className={styles.editor}>
-        <WEditor
-          className={styles['w-editor']}
-          defaultConfig={editorConfig}
-          value={html}
-          onCreated={setEditor}
-          onChange={handleChange}
-          mode="default"
-        />
+        <div className={styles['editor-container']}>
+          <WEditor
+            className={styles['w-editor']}
+            defaultConfig={editorConfig}
+            value={html}
+            onCreated={setEditor}
+            onChange={handleChange}
+            mode="default"
+          />
+        </div>
         <WToolbar
           className={styles['w-toolbar']}
           editor={editor}

@@ -1,11 +1,19 @@
 .editor
   width 100%
   height 100%
+  // 解决拖拽点出滚动条时位置上移
+  padding-bottom: 32px
   flex: 1
-  position: relative
-  .w-ditor
-    background: blue
+  display: flex
+  flex-direction: column
+  .editor-container 
+    height: 100%
+    overflow: auto
+    .w-ditor
+      background: blue
   .w-toolbar
+    font-size: 12px
+    // 配合处理滚动条拖拽点问题
     position: absolute
     bottom: 0
     left: 0

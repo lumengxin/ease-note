@@ -34,7 +34,7 @@ interface Shape {
   h: number
 }
 
-const EaseNote: FC<EaseNoteProps> = ({
+const Note: FC<EaseNoteProps> = ({
   onAdd,
   onClose,
   onList,
@@ -116,8 +116,8 @@ const EaseNote: FC<EaseNoteProps> = ({
   )
 }
 
-EaseNote.defaultProps = {
+Note.defaultProps = {
   mode: 'browser'
 }
 
-export default EaseNote
+export default Note

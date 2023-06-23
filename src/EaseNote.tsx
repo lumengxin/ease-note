@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import EaseNote from './components/ease-note'
+import Note from './components/note'
 import List from './components/list'
-import { DEFAULT_EDITOR, Note, Shape, THEME, DEFAULT_CONFIG } from './utils/const'
+import { DEFAULT_EDITOR, Note as INode, Shape, THEME, DEFAULT_CONFIG } from './utils/const'
 import { generateUUID, getMax, getRandomTheme } from './utils/tool'
 import localDriver from './utils/local'
 import localforage from "localforage";
@@ -10,8 +10,8 @@ import Setting from './components/setting'
 import './global.css'
 import './iconfont.css'
 
-function Main() {
-  const [ notes, setNotes] = useState<Note[]>([{ ...DEFAULT_EDITOR, theme: THEME.PURPLE }])
+function EaseNote() {
+  const [ notes, setNotes] = useState<INode[]>([{ ...DEFAULT_EDITOR, theme: THEME.PURPLE }])
   const [ config, setConfig] = useState<any>(DEFAULT_CONFIG)
   const [ isShowList, setIsShowList ] = useState<boolean>(false)
   const [ isShowSetting, setIsShowSetting ] = useState<boolean>(false)
@@ -148,7 +148,7 @@ function Main() {
       onMouseUp={onMouseUp}
     >
       {displayNotes.map(n => 
-        <EaseNote
+        <Note
           key={n.id}
           {...n} 
           onAdd={handleAdd} 
@@ -182,4 +182,4 @@ function Main() {
   
 }
 
-export default Main
+export default EaseNote
