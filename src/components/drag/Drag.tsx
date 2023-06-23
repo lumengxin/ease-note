@@ -25,7 +25,7 @@ const Drag = ({
       // dragTarget={document.querySelector("#header")}
       throttleDrag={0}
       onDragStart={(e, c, d) => {
-        console.log("onDragStart", e, c, c);
+        // console.log("onDragStart", e, c, c);
       }}
       onDrag={({
         target,
@@ -36,14 +36,14 @@ const Drag = ({
         transform,
         clientX, clientY,
       }) => {
-        console.log("onDrag left, top", left, top);
+        // console.log("onDrag left, top", left, top);
         // 任意一种方式更新位置
         target.style.left = `${left}px`;
         target.style.top = `${top}px`;
         // target.style.transform = transform;
       }}
       onDragEnd={({ target, isDrag, clientX, clientY }) => {
-        console.log("onDragEnd", target, isDrag);
+        // console.log("onDragEnd", target, isDrag);
         const { left, top} = target.style
         onDragEnd && onDragEnd({ x: parseFloat(left), y: parseFloat(top) })
       }}

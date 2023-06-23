@@ -24,6 +24,7 @@ const Panel: FC<PanelProps> = ({
   onDragEnd,
   onResizeEnd,
   className,
+  container,
   children
 }) => {
 
@@ -44,7 +45,7 @@ const Panel: FC<PanelProps> = ({
         </div>
       </div>
 
-      <Drag target={`#${id}`} draggable resizable={resizable} onDragEnd={onDragEnd} onResizeEnd={onResizeEnd} />
+      <Drag target={`#${id}`} draggable resizable={resizable} onDragEnd={onDragEnd} onResizeEnd={onResizeEnd} container={container} />
     </div>
   )
 }

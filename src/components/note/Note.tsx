@@ -17,6 +17,7 @@ export interface EaseNoteProps {
   zIndex: number
   content: string
   theme: THEME
+  container: HTMLDivElement | HTMLElement | string
   onAdd: () => void
   onClose: () => void
   onList: () => void
@@ -48,6 +49,7 @@ const Note: FC<EaseNoteProps> = ({
   zIndex,
   content,
   theme,
+  container,
   ...rest
 }) => {
   const [ resizable, setResizable ] = useState<boolean>(true)
@@ -56,12 +58,12 @@ const Note: FC<EaseNoteProps> = ({
   const dragRef = useRef<ReactElement>(null)
 
   const handleMouseEnter = () => {
-    console.log('enter----')
+    // console.log('enter----')
     setResizable(true)
   }
 
   const handleMouseOver = () => {
-    console.log('over----')
+    // console.log('over----')
     // setResizable(false)
   }
 
@@ -108,6 +110,7 @@ const Note: FC<EaseNoteProps> = ({
         onClose={onClose}
         onDragEnd={onDragEnd}
         onResizeEnd={onResizeEnd}
+        container={container}
       >
         <Editor content={content} onChange={onEditorChange} />
       </Panel>

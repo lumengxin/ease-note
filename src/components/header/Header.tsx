@@ -18,7 +18,7 @@ const Header: FC<HeaderProps> = ({
 }) => {
 
   return (
-    <div id="header" className={cn(styles.header, className)}>
+    <div className={cn(styles.header, className)}>
       <div className={styles.add} onClick={onAdd}>
         <i className="iconfont icon-add"></i>
       </div>
