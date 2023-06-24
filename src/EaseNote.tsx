@@ -16,10 +16,12 @@ let isMounted = true
 
 interface EaseNoteProps {
 	container?: HTMLDivElement | HTMLElement | string
+	remote?: string
 }
 
 const EaseNote: FC<EaseNoteProps> = ({
-	container = document.body
+	container = document.body,
+	remote = ''
 }) => {
 	const [notes, setNotes] = useState<INote[]>([])
 	const [config, setConfig] = useState<any>(DEFAULT_CONFIG)
@@ -133,11 +135,10 @@ const EaseNote: FC<EaseNoteProps> = ({
 		setNotes(initNotes)
 
 		// 是否配置了远程 TODO
-		if (true) {
+		if (!!remote?.length) {
 			const res = await fetchData()
-			if (res.code === 400 && JSON.parse(res.data).length > 0) {
-				const dbNotes = JSON.parse(JSON.parse(res.data)[0].fields.notes)
-				console.log('dbNotes-----', dbNotes)
+			if (res.code === 200) {
+				const dbNotes = JSON.parse(res.data)
 				const isChanged = hasDataChanged(localNotes, dbNotes)
 				if (isChanged) {
 					setNotes(dbNotes)
@@ -155,12 +156,14 @@ const EaseNote: FC<EaseNoteProps> = ({
 		})
 
 		if (!isMounted) {
-			fetchData({notes: JSON.stringify(notes)}, 'POST')
+			if (!!remote?.length) {
+				fetchData({notes: JSON.stringify(notes)}, 'POST')
+			}
 		}
 		isMounted = false
 	}
 
-	const fetchData = async (data = {}, method = 'GET', url = 'http://127.0.0.1:3041/note') => {
+	const fetchData = async (data = {}, method = 'GET', url = remote) => {
 		const config = {
 			method,
 			headers: {
