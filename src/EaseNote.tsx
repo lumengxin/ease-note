@@ -2,7 +2,7 @@ import React, { useEffect, useState, FC } from 'react'
 import Note from './components/note'
 import List from './components/list'
 import { DEFAULT_EDITOR, Note as INote, Shape, THEME, DEFAULT_CONFIG } from './utils/const'
-import { generateUUID, getMax, getRandomTheme } from './utils/tool'
+import { generateUUID, getMax, getRandomTheme, hasDataChanged, debounce } from './utils/tool'
 import localDriver from './utils/local'
 import localforage from 'localforage'
 import Setting from './components/setting'
@@ -11,6 +11,8 @@ import './global.css'
 import './iconfont.css'
 
 let x, y
+// 第一次挂载必然会变更notes, 加标志位不同步后端notes(第一次不更新，只拿notes，后续判断是否和缓存一样再决定是否二次刷新)
+let isMounted = true
 
 interface EaseNoteProps {
 	container?: HTMLDivElement | HTMLElement | string
@@ -125,10 +127,24 @@ const EaseNote: FC<EaseNoteProps> = ({
 	}
 
 	const initData = async () => {
-		const localNotes = await _getItem('_notes_')
-
+		// 先从本地取一次，渲染出页面来；然后从远程拿，比较是否有变化，有则更新
+		const localNotes = await _getItem('_notes_') as any
 		const initNotes = !!localNotes?.length ? localNotes : [{ ...DEFAULT_EDITOR, theme: THEME.PURPLE }]
 		setNotes(initNotes)
+
+		// 是否配置了远程 TODO
+		if (true) {
+			const res = await fetchData()
+			if (res.code === 400 && JSON.parse(res.data).length > 0) {
+				const dbNotes = JSON.parse(JSON.parse(res.data)[0].fields.notes)
+				console.log('dbNotes-----', dbNotes)
+				const isChanged = hasDataChanged(localNotes, dbNotes)
+				if (isChanged) {
+					setNotes(dbNotes)
+				}
+			}
+			
+		}
 	}
 
 	const updateData = (notes) => {
@@ -137,10 +153,36 @@ const EaseNote: FC<EaseNoteProps> = ({
 		localforage.setItem('_notes_', notes, async () => {
 			console.warn('updateData---setItem---', await _getItem('_notes_'))
 		})
+
+		if (!isMounted) {
+			fetchData({notes: JSON.stringify(notes)}, 'POST')
+		}
+		isMounted = false
+	}
+
+	const fetchData = async (data = {}, method = 'GET', url = 'http://127.0.0.1:3041/note') => {
+		const config = {
+			method,
+			headers: {
+				'Content-Type': 'application/json'
+			},
+		}
+		if (method === 'POST') {
+			config['body'] = JSON.stringify(data)
+		}
+		const response = await fetch(url, config)
+		return response.json()
 	}
 
 	useEffect(() => {
-		updateData(notes)
+		console.log('useEffect--notes---', notes)
+		if (!!notes.length) {
+			updateData(notes)
+			// debounce(function() {
+			// 	updateData(notes)
+			// 	console.log('aaa')
+			// }, 300)
+		}
 	}, [notes])
 
 	useEffect(() => {

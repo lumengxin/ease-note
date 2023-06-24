@@ -1,4 +1,4 @@
-import { shapeSize, Shape, THEME } from './const'
+import { shapeSize, Shape, THEME, Note } from './const'
 
 export function generateUUID(prefix: string) {
   return prefix + "_" + "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
@@ -34,4 +34,27 @@ export function getRandomTheme() {
   debugger
   const num = randomNum(0, 5)
   return themes[num]
+}
+
+export function hasDataChanged(oldData: Note[], newData: Note[]): boolean {
+  // return oldData.length !== newData.length || JSON.stringify(oldData) !== JSON.stringify(newData)
+  if (oldData.length !== newData.length) {
+    return true
+  }
+  return JSON.stringify(oldData) !== JSON.stringify(newData)
+}
+
+export function debounce(func, wait, immediate = false) {
+  let timeout
+  return function(...args) {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => {
+      func.apply(this, args)
+    }, wait)
+    // 是否立即执行一次任务
+    if (immediate) {
+      immediate = false
+      func.apply(this, args)
+    }
+  }
 }

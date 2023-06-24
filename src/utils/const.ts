@@ -25,7 +25,7 @@ export interface Note {
   zIndex: number
   visibility: boolean
   active: boolean
-  createTime: string
+  createTime?: string
   updateTime?: string
 }
 
