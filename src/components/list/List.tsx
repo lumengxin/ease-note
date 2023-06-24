@@ -37,6 +37,8 @@ const List: FC<ListProps> = ({
     )
   }
 
+  const sortNs = notes.sort((a, b) => new Date(b.updateTime).getTime() - new Date(a.updateTime).getTime())
+
   return (
     <div className={styles.list} style={{display: isShow ? "block" : "none", background: "blue"}}>
       <Panel 
@@ -56,7 +58,7 @@ const List: FC<ListProps> = ({
             <button><i className="iconfont icon-search"></i></button>
           </div>
           <div className={styles.content}>
-            {notes.map(n => (
+            {sortNs.map(n => (
               <div className={cn(styles.item, { [styles.hide]: !n.visibility })} onDoubleClick={() => onShow(n.id)}>
                 <div className={styles.top}>
                   <div className={styles.time}>{n.updateTime ?? n.createTime}</div>

@@ -66,6 +66,7 @@
 /** native **/
 input {
   border: none;
+  background: unset;
 }
 input:focus-visible {
   outline: none;
