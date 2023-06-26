@@ -15,6 +15,30 @@ export interface SettingProps {
   onClose: () => void
 }
 
+function ItemComponent(props) {
+  const { name, component, defaultValue, options, extras = [] } = props.item
+    const type = component === 'Input' ? 'text' : component === 'Switch' ? "checkbox" : "radio"
+
+    return (
+      <>
+        <div className={styles.item}>
+          <div className={styles.title}>
+            <label for={name}>{name}: </label>
+          </div>
+          <div className={styles.component}>
+            <input id={name} type={type} value={defaultValue} />
+          </div>
+        </div>
+        {extras.length > 0 && (
+          <div className={styles.extras}>
+            {extras.map(e => <ItemComponent key={e.name} item={e[Object.keys(e)[0]]} />)}
+          </div>
+        )}
+      </>
+      
+    )
+}
+
 const Setting: FC<SettingProps> = ({
   config,
   isShow,
@@ -24,7 +48,7 @@ const Setting: FC<SettingProps> = ({
   const renderHeader = () => {
     return (
       <div className={styles.header}>
-        xin
+        username
       </div>
     )
   }
@@ -42,16 +66,7 @@ const Setting: FC<SettingProps> = ({
                 {values.map(v => {
                   const title = Object.keys(v)[0]
                   const item = v[title]
-                  const { name, component, defaultValue, options } = item
-                  const type = component === 'Input' ? 'text' : component === 'Switch' ? "checkbox" : "radio"
-                  return (
-                    <div className={styles.item}>
-                      <div className={styles.title}>{name}</div>
-                      <div className={styles.component}>
-                        <input type={type} value={defaultValue} />
-                      </div>
-                    </div>
-                  )
+                  return <ItemComponent key={v.title} item={item} />
                 })}
               </div>
             </div>

@@ -137,7 +137,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 		// 是否配置了远程 TODO
 		if (!!remote?.length) {
 			const res = await fetchData()
-			if (res.code === 200) {
+			if (res?.code === 200) {
 				const dbNotes = JSON.parse(res.data)
 				const isChanged = hasDataChanged(localNotes, dbNotes)
 				if (isChanged) {
@@ -164,17 +164,21 @@ const EaseNote: FC<EaseNoteProps> = ({
 	}
 
 	const fetchData = async (data = {}, method = 'GET', url = remote) => {
-		const config = {
-			method,
-			headers: {
-				'Content-Type': 'application/json'
-			},
+		try {
+			const configs = {
+				method,
+				headers: {
+					'Content-Type': 'application/json'
+				},
+			}
+			if (method === 'POST') {
+				configs['body'] = JSON.stringify(data)
+			}
+			const response = await fetch(url, configs)
+			return response.json()
+		} catch (error) {
+			console.log('error---', error)
 		}
-		if (method === 'POST') {
-			config['body'] = JSON.stringify(data)
-		}
-		const response = await fetch(url, config)
-		return response.json()
 	}
 
 	useEffect(() => {
@@ -192,11 +196,11 @@ const EaseNote: FC<EaseNoteProps> = ({
 		initData()
 	}, [])
 
-	useEffect(() => {
-		localforage.setItem('_config_', config, async () => {
-			console.warn('setItem---config', await _getItem('_config_'))
-		})
-	}, [config])
+	// useEffect(() => {
+	// 	localforage.setItem('_config_', config, async () => {
+	// 		console.warn('setItem---config', await _getItem('_config_'))
+	// 	})
+	// }, [config])
 
 	useEffect(() => {
 		document.body.addEventListener('mousedown', onMouseDown)

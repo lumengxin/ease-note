@@ -61,6 +61,29 @@ export const DEFAULT_EDITOR: Note = {
   createTime: new Date().toLocaleString()
 }
 
+// 默认配置
+// export const DEFAULT_CONFIG = {
+//   general: {
+//     // 保存
+//     save: {
+//       auto: true,
+//       interval: 0
+//     }
+//   },
+//   appearance: {
+//     // 主题
+//     theme: {
+//       initTheme: DEFAULT_THEME
+//     }
+//   },
+//   // 存储
+//   storage: {
+//     local: true,
+//     remote: {
+//       url: 'http://127.0.0.1:3041/note'
+//     }
+//   }
+// }
 
 export const DEFAULT_CONFIG = [
   {
@@ -71,37 +94,45 @@ export const DEFAULT_CONFIG = [
         autoSave: {
           name: "Auto Save",
           component: 'Switch',
-          defaultValue: true
+          defaultValue: true,
+          extras: [
+            {
+              // 同步时间
+              saveInterval: {
+                name: "Save Interval",
+                component: 'Input',
+                defaultValue: 0
+              }
+            }
+          ]
         },
       },
-      {
-        // 同步时间
-        saveInterval: {
-          name: "Save Interval",
-          component: 'Input',
-          defaultValue: 0
-        }
-      }
     ],
   },
   {
     // 外观
     appearance: [
-      // {
-      //   theme: {
-      //     name: "Theme",
-      //     component: "Radio",
-      //     defaultValue: "blue",
-      //     options: 1,
-      //   }, // 系统主题
-      // },
       {
-        noteTheme: {
-        name: "Note Theme",
-        component: "Radio",
-        defaultValue: DEFAULT_THEME,
-        options: THEME,
-        } // note主题
+        theme: {
+          name: "Note Theme",
+          component: "Radio",
+          defaultValue: DEFAULT_THEME,
+          options: [
+            {
+              label: 'RANDOM',
+              value: 'random',
+              defaultValue: true,
+            },
+            {
+              label: 'GREEN',
+              value: 'rgb(175, 255, 146)',
+            },
+            {
+              label: 'YELLOW',
+              value: 'rgb(243, 255, 143)',
+            },
+          ],
+        }
       }
     ],
   },
@@ -109,12 +140,19 @@ export const DEFAULT_CONFIG = [
     // 存储
     storage: [
       {
-        localStorage: {
+        local: {
           name: "Local Storage",
           component: "Switch",
           defaultValue: true,
         }, // 开启本地存储
       },
+      {
+        remote: {
+          name: "Remote Storage",
+          component: "Input",
+          defaultValue: 'http://127.0.0.1:3041/note'
+        }
+      }
     ]
   },
   // {
