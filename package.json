@@ -1,6 +1,6 @@
 {
   "name": "ease-note",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "description": "A device-independent, comfortable smart notebook",
   "main": "main.js",
   "module": "lib/ease-note.js",
@@ -21,8 +21,13 @@
     "clean": "rimraf ./lib",
     "build:ui": "npm run clean && npm run build-ts"
   },
-  "author": "",
+  "author": "lumengxin",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lumengxin/ease-note"
+  },
+  "homepage": "https://byooka.com/d?bg=1",
   "dependencies": {
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-react": "^1.0.6",
