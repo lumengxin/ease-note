@@ -118,7 +118,7 @@ export const DEFAULT_CONFIG = [
         theme: {
           name: "Note Theme",
           component: "Radio",
-          defaultValue: DEFAULT_THEME,
+          defaultValue: 'random',
           options: [
             {
               label: 'RANDOM',
@@ -132,6 +132,22 @@ export const DEFAULT_CONFIG = [
             {
               label: 'YELLOW',
               value: 'rgb(243, 255, 143)',
+            },
+            {
+              label: 'BLUE',
+              value: 'rgb(184, 238, 255)',
+            },
+            {
+              label: 'PINK',
+              value: 'rgb(244, 193, 192)',
+            },
+            {
+              label: 'PURPLE',
+              value: 'rgb(186, 180, 255)',
+            },
+            {
+              label: 'GRAY',
+              value: 'rgb(235, 235, 235)',
             },
           ],
         }
@@ -152,7 +168,7 @@ export const DEFAULT_CONFIG = [
         remote: {
           name: "Remote Storage",
           component: "Input",
-          defaultValue: 'http://127.0.0.1:3041/note'
+          defaultValue: 'http://127.0.0.1/notes'
         }
       }
     ]

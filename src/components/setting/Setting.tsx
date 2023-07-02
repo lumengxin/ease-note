@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import { generateCenterShape, generateUUID } from "../../utils/tool";
 import Panel from "../panel";
 
@@ -15,28 +15,61 @@ export interface SettingProps {
   onClose: () => void
 }
 
+// TODO: 优化为递归组件
 function ItemComponent(props) {
-  const { name, component, defaultValue, options, extras = [] } = props.item
-    const type = component === 'Input' ? 'text' : component === 'Switch' ? "checkbox" : "radio"
+  const { name, component, defaultValue, options = [], extras = []  } = props.item
+  // const [ configs, setConfigs ] = useState({})
+  
+  // const onChange = (key, value, e) => {
+  //   const tempC = {
+  //     ...configs,
+  //     [key]: value
+  //   }
+  //   console.log('key, value, e', tempC)
 
-    return (
-      <>
-        <div className={styles.item}>
-          <div className={styles.title}>
-            <label for={name}>{name}: </label>
-          </div>
-          <div className={styles.component}>
-            <input id={name} type={type} value={defaultValue} />
-          </div>
+  //   setConfigs(tempC)
+  // }
+
+  const type = component === 'Input' ? 'text' : component === 'Switch' ? "checkbox" : "radio"
+  let attrs = {}
+  if (type === "checkbox") {
+    attrs.checked = props.configs[name] ?? defaultValue
+  } else {
+    attrs.value = props.configs[name] ?? defaultValue
+  }
+  return (
+    <>
+      <div className={styles.item}>
+        <div className={styles.title}>
+          <label for={name}>{name}: </label>
         </div>
-        {extras.length > 0 && (
-          <div className={styles.extras}>
-            {extras.map(e => <ItemComponent key={e.name} item={e[Object.keys(e)[0]]} />)}
-          </div>
-        )}
-      </>
-      
-    )
+        <div className={styles.component}>
+          {options?.length > 0 ? options.map(o => {
+            return (
+              <>
+                <label for={o.label}>{o.label.slice(0, 3)}</label>
+                <input 
+                  id={o.label} 
+                  type={type} 
+                  value={o.value} 
+                  checked={props.configs[name] ? props.configs[name] === o.value : o.defaultValue} 
+                  onChange={(e) => props.onChange(name, e.target.value, e)} 
+                />
+              </>
+            )
+          }) : (
+            <input id={name} type={type} {...attrs} onChange={(e) => props.onChange(name, attrs.hasOwnProperty('value') ? e.target.value : e.target.checked, e)} />
+          )}
+        </div>
+      </div>
+      {extras.length > 0 && (
+        <div className={styles.extras}>
+          {extras.map(e => <ItemComponent key={e.name} item={e[Object.keys(e)[0]]} onChange={props.onChange} configs={props.configs} />)}
+        </div>
+      )}
+    </>
+    
+  )
 }
 
 const Setting: FC<SettingProps> = ({
@@ -44,6 +77,18 @@ const Setting: FC<SettingProps> = ({
   isShow,
   onClose
 }) => {
+  // config前端视图配置，configs简洁配置对外暴露（后端）
+  const [ configs, setConfigs ] = useState({})
+  
+  const handleChange = (key, value, e) => {
+    const tempC = {
+      ...configs,
+      [key]: value
+    }
+    console.log('key, value, e', tempC)
+
+    setConfigs(tempC)
+  }
 
   const renderHeader = () => {
     return (
@@ -66,7 +111,7 @@ const Setting: FC<SettingProps> = ({
                 {values.map(v => {
                   const title = Object.keys(v)[0]
                   const item = v[title]
-                  return <ItemComponent key={v.title} item={item} />
+                  return <ItemComponent key={v.title} item={item} onChange={handleChange} configs={configs} />
                 })}
               </div>
             </div>
