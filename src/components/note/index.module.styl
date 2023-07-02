@@ -6,8 +6,23 @@
       width 30px
       display inline-block
       text-align: center
-  .options 
-    text-align: end
-    margin-right: 12px
-    span
-      padding 0 2px
+  .center
+    position relative
+    .options 
+      text-align: end
+      margin-right: 12px
+      span
+        padding 0 2px
+    .title
+      position absolute
+      left: 0
+      right: 0
+      margin: auto
+      max-width: 110px
+      cursor pointer
+      input
+        width: 100%
+        overflow hidden
+        white-space: nowrap
+        text-overflow: ellipsis
+        text-align: center

@@ -14,6 +14,7 @@ export interface EaseNoteProps {
   mode?: 'browser' | 'desktop'
   id: string
   shape: Shape
+  title: string
   zIndex: number
   content: string
   theme: THEME
@@ -26,6 +27,7 @@ export interface EaseNoteProps {
   onEditorChange: () => void
   onDragEnd: () => void
   onResizeEnd: () => void
+  onTitleChange: (value: string) => void
 }
 
 interface Shape {
@@ -44,8 +46,10 @@ const Note: FC<EaseNoteProps> = ({
   onEditorChange,
   onDragEnd,
   onResizeEnd,
+  onTitleChange,
   id,
   shape,
+  title,
   zIndex,
   content,
   theme,
@@ -82,11 +86,17 @@ const Note: FC<EaseNoteProps> = ({
             {themes.map(t => <span className={styles.block} style={{background: t.value}} onClick={() => handleThemeChange(t.value)}>{t.key.slice(0, 2)}</span>)}
           </div>
         ) : (
-          <div className={styles.options}>
-            <span onClick={() => setIsShowTheme(true)}><i className="iconfont icon-theme"></i></span>
-            <span onClick={onDelete}><i className="iconfont icon-delete"></i></span>
-            <span onClick={onList}><i className="iconfont icon-list"></i></span>
+          <div className={styles.center}>
+            <div className={styles.title} title={title}>
+              <input name="title" value={title} onChange={(e) => { onTitleChange(e.target.value) }} />
+            </div>
+            <div className={styles.options}>
+              <span onClick={() => setIsShowTheme(true)}><i className="iconfont icon-theme"></i></span>
+              <span onClick={onDelete}><i className="iconfont icon-delete"></i></span>
+              <span onClick={onList}><i className="iconfont icon-list"></i></span>
+            </div>
           </div>
+          
         )}
       </>
       

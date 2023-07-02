@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useState } from "react";
 import Panel from "../panel";
 import { generateUUID, generateCenterShape } from '../../utils/tool'
 import { Note } from '../../utils/const'
@@ -25,6 +25,15 @@ const List: FC<ListProps> = ({
   onShow,
   onDelete
 }) => {
+  const [searchValue, setSearchValue] = useState('')
+
+  const handleSearch = (e) => {
+    setSearchValue(e.target.value)
+  }
+
+  const handleClear = () => {
+    setSearchValue('')
+  }
 
   const renderHeader = () => {
     return (
@@ -38,6 +47,7 @@ const List: FC<ListProps> = ({
   }
 
   const sortNs = notes.sort((a, b) => new Date(b.updateTime).getTime() - new Date(a.updateTime).getTime())
+  const filterNs = sortNs.filter(n => n.title.includes(searchValue) || n.content.includes(searchValue))
 
   return (
     <div className={styles.list} style={{display: isShow ? "block" : "none", background: "blue"}}>
@@ -53,15 +63,18 @@ const List: FC<ListProps> = ({
       >
         <div className={styles["list-container"]}>
           <div className={styles.search}>
-            <input placeholder="请输入内容.." />
-            <button><i className="iconfont icon-close-copy"></i></button>
+            <input value={searchValue} placeholder="请输入内容查询.." onChange={handleSearch} />
+            <button onClick={handleClear}><i className="iconfont icon-close-copy"></i></button>
             <button><i className="iconfont icon-search"></i></button>
           </div>
           <div className={styles.content}>
-            {sortNs.map(n => (
+            {filterNs.map(n => (
               <div className={cn(styles.item, { [styles.hide]: !n.visibility })} onDoubleClick={() => onShow(n.id)}>
                 <div className={styles.top}>
-                  <div className={styles.time}>{n.updateTime ?? n.createTime}</div>
+                  <div className={styles.left}>
+                    <div className={styles.title} title={n.title}><span>{n.title}</span></div>
+                    <div className={styles.time}>{n.updateTime ?? n.createTime}</div>
+                  </div>
                   <div className={styles.option}>
                     <span onClick={() => onDelete(n.id)}><i className="iconfont icon-delete"></i></span>
                   </div>

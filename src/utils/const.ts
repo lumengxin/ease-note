@@ -20,6 +20,7 @@ export interface Shape {
 export interface Note {
   id: string
   shape: Shape
+  title: string
   content: string | HTMLDivElement
   theme: THEME
   zIndex: number
@@ -48,6 +49,7 @@ export const shapeSize = {
 
 export const DEFAULT_EDITOR: Note = {
   id: generateUUID("note"),
+  title: 'note',
   shape: {
     x: 40,
     y: 40,

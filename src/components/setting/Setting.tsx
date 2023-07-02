@@ -48,7 +48,7 @@ const Setting: FC<SettingProps> = ({
   const renderHeader = () => {
     return (
       <div className={styles.header}>
-        username
+        user
       </div>
     )
   }

@@ -73,6 +73,11 @@ const EaseNote: FC<EaseNoteProps> = ({
 		setNotes(ns)
 	}
 
+	const handleTitle = (id: string, title: string) => {
+		const ns = notes.map((n) => (n.id === id ? { ...n, title } : n))
+		setNotes(ns)
+	}
+
 	const handleEditorChange = async (id, html, editor) => {
 		// 插槽嵌入的Editor, 此作用域的notes不对 -> TODO
 		// 首次挂载时也会触发
@@ -237,6 +242,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 					onEditorChange={(html, editor) => handleEditorChange(n.id, html, editor)}
 					onDragEnd={(ps) => handleShapeEnd(n.id, ps)}
 					onResizeEnd={(ps) => handleShapeEnd(n.id, ps)}
+					onTitleChange={(title) => handleTitle(n.id, title)}
 					container={container}
 				/>
 			))}
