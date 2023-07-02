@@ -39,7 +39,7 @@ import 'ease-note/lib/ease-note.css'
 
 function Main() {
   return (
-    <EaseNote remote="https://xxx.xx.x/note" />
+    <EaseNote remote="https://xxx.xx.x/notes/list" />
   )
 }
 ```

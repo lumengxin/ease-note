@@ -168,8 +168,9 @@ const EaseNote: FC<EaseNoteProps> = ({
 			const configs = {
 				method,
 				headers: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
 				},
+				credentials: 'include' // 携带cookie校验权限
 			}
 			if (method === 'POST') {
 				configs['body'] = JSON.stringify(data)
