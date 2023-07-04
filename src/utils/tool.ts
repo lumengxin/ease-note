@@ -11,12 +11,12 @@ export function getMax(arr: any, key: string) {
   return Math.max.apply(Math, arr.map((a) => a[key]))
 }
 
-export function generateCenterShape(type: string, offsetY: number = 0): Shape {
+export function generateCenterShape(type: string, offsetY: number = 0, x?: number, y?: number): Shape {
   const { w, h } = shapeSize[type]
   // const { clientHeight, clientWidth } = document.body
   return {
-    x: (window.innerWidth - w) / 2,
-    y: (window.innerHeight - h) / 2 - offsetY,
+    x: x ?? (window.innerWidth - w) / 2,
+    y: y ?? (window.innerHeight - h) / 2 - offsetY,
     w,
     h
   }
@@ -31,7 +31,6 @@ export function getRandomTheme() {
   for (let t in THEME) {
     themes.push(THEME[t])
   }
-  debugger
   const num = randomNum(0, 5)
   return themes[num]
 }
@@ -57,4 +56,8 @@ export function debounce(func, wait, immediate = false) {
       func.apply(this, args)
     }
   }
+}
+
+export function isProd() {
+  return window.location.host.includes('byooka')
 }

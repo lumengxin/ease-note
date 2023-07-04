@@ -1,6 +1,6 @@
 {
   "name": "ease-note",
-  "version": "1.1.7",
+  "version": "1.1.10",
   "description": "A device-independent, comfortable smart notebook",
   "main": "main.js",
   "module": "lib/ease-note.js",
@@ -27,13 +27,15 @@
     "type": "git",
     "url": "https://github.com/lumengxin/ease-note"
   },
-  "homepage": "https://byooka.com/d?bg=1",
+  "homepage": "https://byooka.com/g/note",
   "dependencies": {
     "@wangeditor/editor": "^5.1.23",
     "@wangeditor/editor-for-react": "^1.0.6",
     "classnames": "^2.3.2",
     "localforage": "^1.10.0",
-    "react-moveable": "^0.51.0",
+    "react-moveable": "^0.51.0"
+  },
+  "peerDependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

@@ -21,17 +21,19 @@ interface EaseNoteProps {
 
 const EaseNote: FC<EaseNoteProps> = ({
 	container = document.body,
-	remote = ''
 }) => {
 	const [notes, setNotes] = useState<INote[]>([])
-	const [config, setConfig] = useState<any>(DEFAULT_CONFIG)
+	const [configs, setConfigs] = useState<any>({})
 	const [isShowList, setIsShowList] = useState<boolean>(false)
 	const [isShowSetting, setIsShowSetting] = useState<boolean>(false)
 	const [mouseShape, setMouseShape] = useState<Shape>({ x: 0, y: 0, w: 0, h: 0 })
+	// const [remote, setRemote] = useState<string>('')
 
 	const generateEditor = async (shape?: Shape) => {
 		const realNotes = await _getItem('_notes_')
 		const maxZIndex = getMax(realNotes, 'zIndex')
+
+		const defaultTheme = configs['Note Theme'] ?? DEFAULT_EDITOR.theme
 
 		const newNote = {
 			...DEFAULT_EDITOR,
@@ -44,7 +46,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 						x: DEFAULT_EDITOR.shape.x + 20 * (realNotes.length - 1),
 						y: DEFAULT_EDITOR.shape.y + 20 * (realNotes.length - 1),
 				  },
-			theme: DEFAULT_EDITOR.theme === THEME.RANDOM ? getRandomTheme() : DEFAULT_EDITOR.theme,
+			theme: defaultTheme === THEME.RANDOM ? getRandomTheme() : defaultTheme,
 		}
 		const newNotes = [...realNotes, newNote]
 		setNotes(newNotes)
@@ -133,7 +135,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 		return w > 320 && h > 320
 	}
 
-	const initData = async () => {
+	const initData = async (remote: string) => {
 		// 先从本地取一次，渲染出页面来；然后从远程拿，比较是否有变化，有则更新
 		const localNotes = await _getItem('_notes_') as any
 		const initNotes = !!localNotes?.length ? localNotes : [{ ...DEFAULT_EDITOR, theme: THEME.PURPLE }]
@@ -141,8 +143,8 @@ const EaseNote: FC<EaseNoteProps> = ({
 
 		// 是否配置了远程 TODO
 		if (!!remote?.length) {
-			const res = await fetchData()
-			if (res?.code === 200) {
+			const res = await fetchData(`${remote}/list`)
+			if (res?.code === 200 && !!res.data.length) {
 				const dbNotes = JSON.parse(res.data)
 				const isChanged = hasDataChanged(localNotes, dbNotes)
 				if (isChanged) {
@@ -153,7 +155,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 		}
 	}
 
-	const updateData = (notes) => {
+	const updateData = (remote, notes) => {
 		// 不保存没有编辑的note -> 初始content为空
 		// 定时保存 -> 节流
 		localforage.setItem('_notes_', notes, async () => {
@@ -162,15 +164,15 @@ const EaseNote: FC<EaseNoteProps> = ({
 
 		if (!isMounted) {
 			if (!!remote?.length) {
-				fetchData({notes: JSON.stringify(notes)}, 'POST')
+				fetchData(`${remote}/list`, 'POST', {notes: JSON.stringify(notes)})
 			}
 		}
 		isMounted = false
 	}
 
-	const fetchData = async (data = {}, method = 'GET', url = remote) => {
+	const fetchData = async (url = '', method = 'GET', data = {} ) => {
 		try {
-			const configs = {
+			const params = {
 				method,
 				headers: {
 					'Content-Type': 'application/json',
@@ -178,9 +180,9 @@ const EaseNote: FC<EaseNoteProps> = ({
 				credentials: 'include' // 携带cookie校验权限
 			}
 			if (method === 'POST') {
-				configs['body'] = JSON.stringify(data)
+				params['body'] = JSON.stringify(data)
 			}
-			const response = await fetch(url, configs)
+			const response = await fetch(url, params)
 			return response.json()
 		} catch (error) {
 			console.log('error---', error)
@@ -190,23 +192,39 @@ const EaseNote: FC<EaseNoteProps> = ({
 	useEffect(() => {
 		console.log('useEffect--notes---', notes)
 		if (!!notes.length) {
-			updateData(notes)
+			const url = configs['Remote Storage'] ?? DEFAULT_CONFIG[2].storage[1].remote?.defaultValue
+			updateData(url, notes)
 			// debounce(function() {
 			// 	updateData(notes)
 			// 	console.log('aaa')
 			// }, 300)
 		}
-	}, [notes])
+	}, [notes, configs['Remote Storage']])
+
+	const fetchConfigs = async () => {
+		const defaultRemote = DEFAULT_CONFIG[2].storage[1].remote?.defaultValue
+		const res = await fetchData(`${defaultRemote}/config`)
+		console.log(res, '----')
+		if (res.code === 200 && !!res.data.length) {
+			const tempConfigs = JSON.parse(res.data)
+			setConfigs(tempConfigs)
+
+			initData(tempConfigs['Remote Storage'])
+		} else {
+			initData(defaultRemote)
+		}
+	}
 
 	useEffect(() => {
-		initData()
+		fetchConfigs()
 	}, [])
 
-	// useEffect(() => {
-	// 	localforage.setItem('_config_', config, async () => {
-	// 		console.warn('setItem---config', await _getItem('_config_'))
-	// 	})
-	// }, [config])
+	useEffect(() => {
+		localforage.setItem('_configs_', configs, async () => {
+			console.warn('setItem---config', await _getItem('_configs_'))
+		})
+		// setRemote(configs['Remote Storage'])
+	}, [configs])
 
 	useEffect(() => {
 		document.body.addEventListener('mousedown', onMouseDown)
@@ -257,7 +275,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 				onDelete={handleDelete}
 			/>
 
-			<Setting isShow={isShowSetting} onClose={() => setIsShowSetting(false)} config={config} />
+			<Setting isShow={isShowSetting} onClose={() => setIsShowSetting(false)} config={configs} onChange={(c) => setConfigs(c)} />
 		</div>
 	)
 }

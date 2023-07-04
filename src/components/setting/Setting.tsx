@@ -1,6 +1,7 @@
-import React, { FC, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import { generateCenterShape, generateUUID } from "../../utils/tool";
 import Panel from "../panel";
+import { DEFAULT_CONFIG } from '../../utils/const'
 
 import styles from './index.module.styl'
 
@@ -13,22 +14,12 @@ export interface SettingProps {
   config: any
   isShow: boolean
   onClose: () => void
+  onChange: (config: object) => void
 }
 
 // TODO: 优化为递归组件
 function ItemComponent(props) {
   const { name, component, defaultValue, options = [], extras = []  } = props.item
-  // const [ configs, setConfigs ] = useState({})
-  
-  // const onChange = (key, value, e) => {
-  //   const tempC = {
-  //     ...configs,
-  //     [key]: value
-  //   }
-  //   console.log('key, value, e', tempC)
-
-  //   setConfigs(tempC)
-  // }
 
   const type = component === 'Input' ? 'text' : component === 'Switch' ? "checkbox" : "radio"
   let attrs = {}
@@ -75,7 +66,8 @@ function ItemComponent(props) {
 const Setting: FC<SettingProps> = ({
   config,
   isShow,
-  onClose
+  onClose,
+  onChange
 }) => {
   // config前端视图配置，configs简洁配置对外暴露（后端）
   const [ configs, setConfigs ] = useState({})
@@ -88,7 +80,13 @@ const Setting: FC<SettingProps> = ({
     console.log('key, value, e', tempC)
 
     setConfigs(tempC)
+
+    onChange(tempC)
   }
+
+  useEffect(() => {
+    setConfigs(config)
+  }, [config])
 
   const renderHeader = () => {
     return (
@@ -101,7 +99,7 @@ const Setting: FC<SettingProps> = ({
   const renderContent = () => {
     return (
       <div className={styles["setting-container"]}>
-        {config.map(c => {
+        {DEFAULT_CONFIG.map(c => {
           const key = Object.keys(c)[0]
           const values = c[key]
           return (

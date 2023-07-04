@@ -1,4 +1,6 @@
-import { generateUUID } from './tool'
+import { generateUUID, isProd } from './tool'
+
+const baseUrl = isProd() ? '/by-web-api' : 'http://localhost:3041'
 
 export enum THEME {
   GRAY = 'rgb(235, 235, 235)',
@@ -168,7 +170,7 @@ export const DEFAULT_CONFIG = [
         remote: {
           name: "Remote Storage",
           component: "Input",
-          defaultValue: 'http://127.0.0.1/notes'
+          defaultValue: `${baseUrl}/notes`
         }
       }
     ]
@@ -180,6 +182,10 @@ export const DEFAULT_CONFIG = [
   //   }
   // }
 ]
+
+export const BACK_CONFIGS = {
+  //
+}
 
 const toolbarkeys = [
   "headerSelect",

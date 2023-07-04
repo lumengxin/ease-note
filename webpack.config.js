@@ -38,8 +38,7 @@ module.exports = {
     static: {
       directory: path.join(__dirname, 'public')
     },
-    // compress: true,
-    // port: 8000,
+    port: 8000,
     open: true,
     client: {
       overlay: {
@@ -86,18 +85,18 @@ module.exports = {
       }
     ],
   },
-  // externals: {
-  //   'react': {
-  //     commonjs: 'react', // CommonJS 模块
-  //     commonjs2: 'react', // CommonJS 模块
-  //     amd: 'react',       // AMD 模块
-  //     root: 'React',     // 全局变量访问
-  //   },
-  //   'react-dom': {
-  //     commonjs: 'react-dom',
-  //     commonjs2: 'react-dom',
-  //     amd: 'react-dom',
-  //     root: 'ReactDOM',
-  //   },
-  // }
+  externals: {
+    'react': {
+      commonjs: 'react', // CommonJS 模块
+      commonjs2: 'react', // CommonJS 模块
+      amd: 'react',       // AMD 模块
+      root: 'React',     // 全局变量访问
+    },
+    'react-dom': {
+      commonjs: 'react-dom',
+      commonjs2: 'react-dom',
+      amd: 'react-dom',
+      root: 'ReactDOM',
+    },
+  }
 }

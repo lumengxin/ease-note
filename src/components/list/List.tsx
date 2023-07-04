@@ -46,14 +46,17 @@ const List: FC<ListProps> = ({
     )
   }
 
-  const sortNs = notes.sort((a, b) => new Date(b.updateTime).getTime() - new Date(a.updateTime).getTime())
-  const filterNs = sortNs.filter(n => n.title.includes(searchValue) || n.content.includes(searchValue))
-
+  let filterNs = []
+  if (notes.length > 0) {
+    const sortNs = notes.sort((a, b) => new Date(b.updateTime).getTime() - new Date(a.updateTime).getTime())
+    filterNs = sortNs.filter(n => n.title.includes(searchValue) || n.content.includes(searchValue))
+  }
+  
   return (
     <div className={styles.list} style={{display: isShow ? "block" : "none", background: "blue"}}>
       <Panel 
         id={generateUUID("list")}
-        shape={generateCenterShape('LIST')}
+        shape={generateCenterShape('LIST', 0, 20, 20)}
         zIndex={999}
         resizable={false}
         renderHeader={renderHeader}

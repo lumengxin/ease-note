@@ -4,23 +4,21 @@
     </b>
 </h1>
 
-<p align="center">A device-independent, comfortable smart notebook</p>
+<p align="center">一个独立于设备，易于操作的智能便签</p>
 
-## Installing
+## 开始
 
+### 安装
 ```bash
 $ npm install ease-note
 ```
 
-## Example
+### 使用
 
-1. minimize use. Use local storage by default
-
+1. 默认开启本地存储
 ```bash
 import EaseNote from 'ease-note'
-
 import 'ease-note/lib/ease-note.css'
-
 
 function Main() {
   return (
@@ -29,24 +27,14 @@ function Main() {
 }
 ```
 
+2. 使用自己的远程服务，跨设备同步数据
 
-2. Use your own service.
-```bash
-import EaseNote from 'ease-note'
+配置中设置'Remote Storage'为你自己的api。规范 <api>/notes
 
-import 'ease-note/lib/ease-note.css'
+**`/notes` 接口规范:**
 
-
-function Main() {
-  return (
-    <EaseNote remote="https://xxx.xx.x/notes/list" />
-  )
-}
-```
-
-**`/note` interface specification:**
-
-1. get notes:
+`/list` 相关
+1. 获取便签:
 ```
 Methods: GET
 Params: none
@@ -55,7 +43,7 @@ Response:
   - data: String[Note] | []
 ```
 
-2. create or update notes:
+2. 创建&更新便签:
 ```
 Methods: POST
 Body: {
@@ -66,6 +54,29 @@ Response:
   - data: []
 ```
 
+`/config` 相关
+1. 获取配置:
+```
+Methods: GET
+Params: none
+Response: 
+  - code: 200 success; 400 failed
+  - data: String{Config}
+```
+
+2. 更新配置:
+```
+Methods: POST
+Body: {
+  notes: String{Config}
+}
+Response: 
+  - code: 200 success; 400 failed
+  - data: {}
+```
+
+ts类型说明
+```
 enum THEME {
   GRAY = 'rgb(235, 235, 235)',
   PURPLE = 'rgb(186, 180, 255)',
@@ -86,6 +97,7 @@ interface Shape {
 interface Note {
   id: string
   shape: Shape
+  title: string
   content: string | HTMLDivElement
   theme: THEME
   zIndex: number
@@ -94,7 +106,23 @@ interface Note {
   createTime?: string
   updateTime?: string
 }
+```
 
 ## Feature
+
+- 便签可创建、删除、隐藏
+- 便签面板支持自由拖拽，改变大小
+- 便签支持鼠标框选创建（需要大于一定尺寸）
+- 便签支持修改标题、换肤等功能
+- 便签操作支持标题、粗体、文字颜色、列表、待办、表格、代码块等
+- 便签列表支持查询（标题&内容），创建、显示、删除便签功能
+- 便签列表自动根据更新时间排序
+- 配置支持创建便签默认主题配置、远程服务配置
+
+### todo
+
+- 配置完善
+- 接入ai书写提示
+- 跨设备
 
 
