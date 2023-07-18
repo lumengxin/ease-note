@@ -21,6 +21,7 @@ function Editor({content, onChange}) {
         "todo",
         "insertTable",
         "codeBlock",
+        "emotion",
       ]
     } 
 

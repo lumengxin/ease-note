@@ -56,7 +56,7 @@ const List: FC<ListProps> = ({
     <div className={styles.list} style={{display: isShow ? "block" : "none", background: "blue"}}>
       <Panel 
         id={generateUUID("list")}
-        shape={generateCenterShape('LIST', 0, 20, 20)}
+        shape={generateCenterShape('LIST', 0, 20, 40)}
         zIndex={999}
         resizable={false}
         renderHeader={renderHeader}
