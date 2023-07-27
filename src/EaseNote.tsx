@@ -162,7 +162,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 			console.warn('updateData---setItem---', await _getItem('_notes_'))
 		})
 
-		if (!isMounted) {
+		if (!isMounted && remote !== DEFAULT_CONFIG[2].storage[1].remote?.defaultValue) {
 			if (!!remote?.length) {
 				fetchData(`${remote}/list`, 'POST', {notes: JSON.stringify(notes)})
 			}
