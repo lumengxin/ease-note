@@ -86,12 +86,12 @@ const EaseNote: FC<EaseNoteProps> = ({
 		// 首次挂载时也会触发
 		console.log('handleEditorChange----', id, html, editor.getText())
 		// const isInit = !editor.getText().length
-		// const realNotes = await _getItem('_notes_')
+		// 此作用域中state维护的notes状态不对
+		const realNotes = await _getItem('_notes_')
 		// const curNotes = realNotes.map((n) =>
 		// 	n.id === id ? { ...n, content: isInit ? n.content : html, updateTime: new Date().toLocaleString() } : n,
 		// )
-		// setNotes(curNotes)
-		updateNotes(id, 'content', html)
+		updateNotes(id, 'content', html, realNotes)
 	}
 
 	const handleShapeEnd = (id, ps) => {
@@ -100,8 +100,9 @@ const EaseNote: FC<EaseNoteProps> = ({
 		updateData(ns)
 	}
 
-	const updateNotes = (id: string, attr: string, value: any, isBatch = false) => {
-		const newNotes = notes.filter(f => f.id === id).map((n) =>
+	const updateNotes = (id: string, attr: string, value: any, realNotes) => {
+		const curNotes = realNotes ?? notes
+		const newNotes = curNotes.filter(f => f.id === id).map((n) =>
 			n.id === id ? { ...n, [attr]: value } : n,
 		)
 		updateData(newNotes)
@@ -322,7 +323,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 				/>
 			))}
 
-			<List
+			{/* <List
 				isShow={isShowList}
 				notes={notes}
 				onAdd={handleAdd}
@@ -330,7 +331,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 				onShow={(id) => handleVisible(id, true)}
 				onSetting={() => setIsShowSetting(true)}
 				onDelete={handleDelete}
-			/>
+			/> */}
 
 			<Setting isShow={isShowSetting} onClose={() => setIsShowSetting(false)} configs={configs} onChange={handleConfigChange} />
 		</div>

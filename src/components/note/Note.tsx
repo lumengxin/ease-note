@@ -1,4 +1,4 @@
-import React, { FC, ReactElement, useRef, useState } from "react";
+import React, { FC, ReactElement, useRef, useState, useEffect } from "react";
 import Editor from '../editor';
 import Panel from '../panel';
 import { THEME } from "../../utils/const";
@@ -58,6 +58,7 @@ const Note: FC<EaseNoteProps> = ({
 }) => {
   const [ resizable, setResizable ] = useState<boolean>(true)
   const [ isShowTheme, setIsShowTheme ] = useState<boolean>(false)
+  const [ sTtile, setSTitle] = useState<string>('')
   const targetRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<ReactElement>(null)
 
@@ -77,6 +78,14 @@ const Note: FC<EaseNoteProps> = ({
     onTheme && onTheme(theme)
   }
 
+  const handleTitleChange = (e) => {
+    setSTitle(e.target.value)
+    onTitleChange && onTitleChange(e.target.value)
+  }
+
+  useEffect(() => {
+    setSTitle(title)
+  }, [title])
 
   const renderHeader = () => {
     return (
@@ -87,8 +96,8 @@ const Note: FC<EaseNoteProps> = ({
           </div>
         ) : (
           <div className={styles.center}>
-            <div className={styles.title} title={title}>
-              <input name="title" value={title} onChange={(e) => { onTitleChange(e.target.value) }} />
+            <div className={styles.title}>
+              <input name="title" value={sTtile} onChange={handleTitleChange} />
             </div>
             <div className={styles.options}>
               <span onClick={() => setIsShowTheme(true)}><i className="iconfont icon-theme"></i></span>
