@@ -37,6 +37,7 @@ export function getRandomTheme() {
 
 export function hasDataChanged(oldData: Note[], newData: Note[]): boolean {
   // return oldData.length !== newData.length || JSON.stringify(oldData) !== JSON.stringify(newData)
+  if (!oldData) return true
   if (oldData.length !== newData.length) {
     return true
   }
