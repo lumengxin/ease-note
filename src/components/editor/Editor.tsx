@@ -9,7 +9,7 @@ let flag = false
 
 function Editor({content, onChange}) {
     const [editor, setEditor] = useState<IDomEditor | null>(null)
-    const [html, setHtml] = useState('')
+    // const [html, setHtml] = useState('')
 
     // 工具栏配置
     const toolbarConfig: Partial<IToolbarConfig> = {
@@ -35,7 +35,7 @@ function Editor({content, onChange}) {
       if (flag) {
         console.log('editor---111', editor)
         const contents = editor.getHtml()
-        setHtml(contents)
+        // setHtml(contents)
         onChange && onChange(contents, editor)
       }
       flag = true
@@ -56,9 +56,9 @@ function Editor({content, onChange}) {
       }
     }, [editor])
 
-    useEffect(() => {
-      setHtml(content)
-    }, [content])
+    // useEffect(() => {
+    //   setHtml(content)
+    // }, [content])
 
     return (
       <div className={styles.editor}>
@@ -66,7 +66,7 @@ function Editor({content, onChange}) {
           <WEditor
             className={styles['w-editor']}
             defaultConfig={editorConfig}
-            value={html}
+            value={content}
             onCreated={setEditor}
             onChange={handleChange}
             mode="default"

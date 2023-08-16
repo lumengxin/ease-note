@@ -48,7 +48,8 @@ const List: FC<ListProps> = ({
 
   let filterNs = []
   if (notes.length > 0) {
-    const sortNs = notes.sort((a, b) => new Date(b.updateTime).getTime() - new Date(a.updateTime).getTime())
+    const sortNs = notes.sort((a, b) => new Date(b.update_time).getTime() - new Date(a.update_time).getTime())
+    console.log('ssss', sortNs)
     filterNs = sortNs.filter(n => n.title.includes(searchValue) || n.content.includes(searchValue))
   }
   

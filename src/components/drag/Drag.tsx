@@ -22,10 +22,12 @@ const Drag = ({
       target={target}
       container={container}
       draggable={draggable}
-      // dragTarget={document.querySelector("#header")}
+      dragTarget={dragTarget}
+      
       throttleDrag={0}
-      onDragStart={(e, c, d) => {
-        // console.log("onDragStart", e, c, c);
+      onDragStart={(e) => {
+        console.log("onDragStart", e);
+        // 屏蔽header拖拽（防止上面点击事件触发拖拽事件）
       }}
       onDrag={({
         target,
@@ -70,6 +72,7 @@ const Drag = ({
       // elementGuidelines={["#react", ".heart"]}
       checkInput={true}
       // flushSync={flushSync} 
+      // preventClickDefault={true}
     />
   );
 }

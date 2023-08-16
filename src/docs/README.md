@@ -34,6 +34,16 @@ electron, ts, react, webpack, cache, indexDB
 
 ### 图标，图片等
 
+## 本地调试
+
+1. package.json中去掉"peerDependencies"
+
+2. webpack.config.js中去掉 externals
+
+3. 启动主站，登录一下。note和主站端口一样，可以复用主站cookie信息。
+
+运行：
+> npm run start
 
 ## FAQ
 

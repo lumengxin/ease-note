@@ -11,10 +11,10 @@ import styles from './index.module.styl'
 // }
 
 export interface SettingProps {
-  config: any
+  configs: any
   isShow: boolean
   onClose: () => void
-  onChange: (config: object) => void
+  onChange: (configs: object) => void
 }
 
 // TODO: 优化为递归组件
@@ -49,7 +49,7 @@ function ItemComponent(props) {
               </>
             )
           }) : (
-            <input id={name} type={type} {...attrs} onChange={(e) => props.onChange(name, attrs.hasOwnProperty('value') ? e.target.value : e.target.checked, e)} />
+            <input id={name} type={type} {...attrs} readOnly={name === "Remote Storage" ? true : false} onChange={(e) => props.onChange(name, attrs.hasOwnProperty('value') ? e.target.value : e.target.checked, e)} />
           )}
         </div>
       </div>
@@ -64,13 +64,13 @@ function ItemComponent(props) {
 }
 
 const Setting: FC<SettingProps> = ({
-  config,
+  configs,
   isShow,
   onClose,
   onChange
 }) => {
   // config前端视图配置，configs简洁配置对外暴露（后端）
-  const [ configs, setConfigs ] = useState({})
+  // const [ configs, setConfigs ] = useState({})
   
   const handleChange = (key, value, e) => {
     const tempC = {
@@ -79,14 +79,8 @@ const Setting: FC<SettingProps> = ({
     }
     console.log('key, value, e', tempC)
 
-    setConfigs(tempC)
-
     onChange(tempC)
   }
-
-  useEffect(() => {
-    setConfigs(config)
-  }, [config])
 
   const renderHeader = () => {
     return (

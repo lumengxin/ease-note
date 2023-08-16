@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, useRef } from "react";
 import Header from '../header';
 import Editor from '../editor';
 import Drag from '../drag';
@@ -37,15 +37,15 @@ const Panel: FC<PanelProps> = ({
         onMouseOut={onMouseOut}
         className={cn(styles["panel-container"], className)} 
       >
-        <Header className={styles["header"]}  onAdd={onAdd} onClose={onClose}>
+        <Header className={cn(styles["header"], 'note-header')}  onAdd={onAdd} onClose={onClose}>
           {renderHeader && renderHeader()}
         </Header>
-        <div className={styles["content"]}>
+        <div className={cn(styles["content"], `${id}_content`)}>
           {children}
         </div>
       </div>
 
-      <Drag target={`#${id}`} draggable resizable={resizable} onDragEnd={onDragEnd} onResizeEnd={onResizeEnd} container={container} />
+      <Drag target={`#${id}`} draggable dragTarget={document.querySelector(`.${id}_content`)} resizable={resizable} onDragEnd={onDragEnd} onResizeEnd={onResizeEnd} container={container} />
     </div>
   )
 }
