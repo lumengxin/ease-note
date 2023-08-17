@@ -8,6 +8,9 @@ export function generateUUID(prefix: string) {
 }; 
 
 export function getMax(arr: any, key: string) {
+  if (!arr?.length) {
+    return 1
+  }
   return Math.max.apply(Math, arr.map((a) => a[key]))
 }
 
