@@ -65,3 +65,7 @@ export function debounce(func, wait, immediate = false) {
 export function isProd() {
   return window.location.host.includes('byooka')
 }
+
+export function isMobile() {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+}

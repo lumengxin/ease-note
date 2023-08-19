@@ -3,12 +3,15 @@ import Header from '../header';
 import Editor from '../editor';
 import Drag from '../drag';
 import cn from "classnames"
+import { isMobile } from '../../utils/tool'
 
 import styles from './index.module.styl'
 
 export interface PanelProps {
   
 }
+
+const isPC = !isMobile()
 
 const Panel: FC<PanelProps> = ({
   isShow,
@@ -46,7 +49,7 @@ const Panel: FC<PanelProps> = ({
         </div>
       </div>
 
-      <Drag target={`#${id}`} draggable={draggable} dragTarget={document.querySelector(`.${id}_content`)} resizable={resizable} onDragEnd={onDragEnd} onResizeEnd={onResizeEnd} container={container} />
+      {isPC && <Drag target={`#${id}`} draggable={draggable} dragTarget={document.querySelector(`.${id}_content`)} resizable={resizable} onDragEnd={onDragEnd} onResizeEnd={onResizeEnd} container={container} />}
     </div>
   )
 }

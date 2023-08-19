@@ -26,7 +26,7 @@ const Drag = ({
       
       throttleDrag={0}
       onDragStart={(e) => {
-        console.log("onDragStart", e);
+        console.log("onDragStart", e.inputEvent.target.localName);
         // 屏蔽header拖拽（防止上面点击事件触发拖拽事件）
       }}
       onDrag={({
