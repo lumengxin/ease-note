@@ -130,6 +130,7 @@ const Note: FC<EaseNoteProps> = ({
         onDragEnd={onDragEnd}
         onResizeEnd={onResizeEnd}
         container={container}
+        draggable
       >
         <Editor content={content} onChange={onEditorChange} />
       </Panel>

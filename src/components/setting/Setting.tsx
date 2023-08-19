@@ -120,7 +120,7 @@ const Setting: FC<SettingProps> = ({
           <Panel 
             id={generateUUID("setting")}
             shape={generateCenterShape('SETTING', 40)}
-            zIndex={1000}
+            zIndex={10000}
             resizable={false}
             renderHeader={renderHeader}
             onClose={onClose}

@@ -7,7 +7,7 @@ import './index.module.styl'
 const Drag = ({
   target,
   container = document.body,
-  draggable = true,
+  draggable,
   dragTarget,
   onDragStart,
   onDrag,

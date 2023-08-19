@@ -154,13 +154,13 @@ const EaseNote: FC<EaseNoteProps> = ({
 		// 是否配置了远程 TODO
 		if (!!remote?.length) {
 			const res = await fetchData(`${remote}/list`)
-			if (res?.code === 200 && !!res.data.length) {
-				const dbNotes = res.data.map(d => {
+			if (res?.code === 200) {
+				const dbNotes = !!res.data?.length ? res.data.map(d => {
 					return {
 						...d,
 						zIndex: d.z_index
 					}
-				})
+				}) : []
 				const isChanged = hasDataChanged(localNotes, dbNotes)
 				if (isChanged) {
 					setNotes(dbNotes)
@@ -323,7 +323,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 				/>
 			))}
 
-			{/* <List
+			<List
 				isShow={isShowList}
 				notes={notes}
 				onAdd={handleAdd}
@@ -331,7 +331,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 				onShow={(id) => handleVisible(id, true)}
 				onSetting={() => setIsShowSetting(true)}
 				onDelete={handleDelete}
-			/> */}
+			/>
 
 			<Setting isShow={isShowSetting} onClose={() => setIsShowSetting(false)} configs={configs} onChange={handleConfigChange} />
 		</div>

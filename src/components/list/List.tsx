@@ -58,7 +58,7 @@ const List: FC<ListProps> = ({
       <Panel 
         id={generateUUID("list")}
         shape={generateCenterShape('LIST', 0, 20, 40)}
-        zIndex={999}
+        zIndex={9999}
         resizable={false}
         renderHeader={renderHeader}
         onAdd={onAdd}
