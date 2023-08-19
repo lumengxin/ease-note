@@ -15,6 +15,9 @@ function Editor({content, onChange}) {
     const toolbarConfig: Partial<IToolbarConfig> = {
       toolbarKeys: [
         "headerSelect",
+        "undo",
+        "redo",
+        "|",
         "bold",
         "color",
         "bulletedList",
@@ -63,6 +66,12 @@ function Editor({content, onChange}) {
     return (
       <div className={styles.editor}>
         <div className={styles['editor-container']}>
+          <WToolbar
+            className={styles['w-toolbar']}
+            editor={editor}
+            defaultConfig={toolbarConfig}
+            mode="default"
+          />
           <WEditor
             className={styles['w-editor']}
             defaultConfig={editorConfig}
@@ -72,12 +81,6 @@ function Editor({content, onChange}) {
             mode="default"
           />
         </div>
-        <WToolbar
-          className={styles['w-toolbar']}
-          editor={editor}
-          defaultConfig={toolbarConfig}
-          mode="default"
-        />
       </div>
     )
 }
