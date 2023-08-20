@@ -11,7 +11,7 @@ export interface PanelProps {
   
 }
 
-const isPC = !isMobile()
+const isPhone = isMobile()
 
 const Panel: FC<PanelProps> = ({
   isShow,
@@ -39,7 +39,7 @@ const Panel: FC<PanelProps> = ({
         style={{position: 'absolute', left: shape.x + 'px', top: shape.y + 'px', width: shape.w + 'px', height: shape.h + 'px', zIndex}}
         onMouseEnter={onMouseEnter}
         onMouseOut={onMouseOut}
-        className={cn(styles["panel-container"], className, "panel-container")} 
+        className={cn(styles["panel-container"], className, "panel-container", { [styles.isPhone]: isPhone })} 
       >
         <Header className={cn(styles["header"], 'note-header')}  onAdd={onAdd} onClose={onClose}>
           {renderHeader && renderHeader()}
@@ -49,7 +49,7 @@ const Panel: FC<PanelProps> = ({
         </div>
       </div>
 
-      {isPC && <Drag target={`#${id}`} draggable={draggable} dragTarget={document.querySelector(`.${id}_content`)} resizable={resizable} onDragEnd={onDragEnd} onResizeEnd={onResizeEnd} container={container} />}
+      {!isPhone && <Drag target={`#${id}`} draggable={draggable} dragTarget={document.querySelector(`.${id}_content`)} resizable={resizable} onDragEnd={onDragEnd} onResizeEnd={onResizeEnd} container={container} />}
     </div>
   )
 }

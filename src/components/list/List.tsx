@@ -3,27 +3,34 @@ import Panel from "../panel";
 import { generateUUID, generateCenterShape } from '../../utils/tool'
 import { Note } from '../../utils/const'
 import cn from 'classnames'
+import { isMobile } from "../../utils/tool";
 
 import styles from './index.module.styl'
+
+const isPhone = isMobile()
 
 export interface ListProps {
   isShow: boolean
   notes: Note[]
+  activeId: string
   onAdd: () => void
   onClose: () => void
   onSetting: () => void
-  onShow: (id: string) => void
+  onDoubleClick?: (id: string) => void
   onDelete: (id: string) => void
+  onClick?: (id: string) => void
 }
 
 const List: FC<ListProps> = ({
   isShow,
   notes,
+  activeId,
   onAdd,
   onClose,
   onSetting,
-  onShow,
-  onDelete
+  onDoubleClick,
+  onDelete,
+  onClick
 }) => {
   const [searchValue, setSearchValue] = useState('')
 
@@ -73,7 +80,12 @@ const List: FC<ListProps> = ({
           </div>
           <div className={styles.content}>
             {filterNs.map(n => (
-              <div className={cn(styles.item, { [styles.hide]: !n.visibility })} onDoubleClick={() => onShow(n.id)}>
+              <div 
+                className={cn(styles.item, { [styles.hide]: !isPhone && !n.visibility }, { [styles.bar]: isPhone && n.id === activeId})} 
+                style={{background: n.theme}}
+                onDoubleClick={() => onDoubleClick(n.id)} 
+                onClick={() => onClick(n.id)}
+              >
                 <div className={styles.top}>
                   <div className={styles.left}>
                     <div className={styles.title} title={n.title}><span>{n.title}</span></div>

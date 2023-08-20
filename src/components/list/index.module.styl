@@ -31,18 +31,28 @@
       .content
         // flex 1
         margin-top 8px
-        height: 440px
+        // height: 440px
+        height: calc(100% - 80px)
         overflow-y: auto
         .item
+          position relative
           box-sizing: border-box
-          padding: 4px
-          margin 6px 0
+          padding: 4px 8px
+          margin 10px 0
           max-height: 96px
           background: #999
           border-radius: 4px
           overflow: hidden
           &.hide
             opacity .3
+          &.bar
+            &::before
+              content ''
+              position absolute
+              width: 4px
+              height: 100%
+              left: 0
+              background: rgb(230, 0, 0)
           .top
             display: flex
             justify-content: space-between

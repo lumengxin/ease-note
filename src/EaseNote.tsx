@@ -6,6 +6,7 @@ import { generateUUID, getMax, getRandomTheme, hasDataChanged, debounce } from '
 import localDriver from './utils/local'
 import localforage from 'localforage'
 import Setting from './components/setting'
+import { isMobile } from './utils/tool'
 
 import './global.css'
 import './iconfont.css'
@@ -13,6 +14,8 @@ import './iconfont.css'
 let x, y
 // 第一次挂载必然会变更notes, 加标志位不同步后端notes(第一次不更新，只拿notes，后续判断是否和缓存一样再决定是否二次刷新)
 let isMounted = true
+
+const isPhone = isMobile()
 
 interface EaseNoteProps {
 	container?: HTMLDivElement | HTMLElement | string
@@ -30,6 +33,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 	const [isShowSetting, setIsShowSetting] = useState<boolean>(false)
 	const [mouseShape, setMouseShape] = useState<Shape>({ x: 0, y: 0, w: 0, h: 0 })
 	const [remote, setRemote] = useState<string>(defaultRemote)
+	const [phoneNote, setPhoneNote] = useState<INote | any>(null)
 
 	const generateEditor = async (shape?: Shape) => {
 		const realNotes = await _getItem('_notes_')
@@ -67,6 +71,12 @@ const EaseNote: FC<EaseNoteProps> = ({
 
 	const handleDelete = (id: string) => {
 		deleteData(id)
+
+		if (isPhone) {
+			setPhoneNote(null)
+			localforage.removeItem("_phoneNote_")
+			handleList(true)
+		}
 	}
 
 	const handleVisible = (id: string, visible: boolean) => {
@@ -75,6 +85,13 @@ const EaseNote: FC<EaseNoteProps> = ({
 
 	const handleTheme = (id: string, theme: THEME) => {
 		updateNotes(id, 'theme', theme)
+
+		// 暂时默认成功，直接更新（应该放成功回调 -> todo）
+		const newPhoneNote = {
+			...phoneNote,
+			theme
+		}
+		setPhoneNote(newPhoneNote)
 	}
 
 	const handleTitle = (id: string, title: string) => {
@@ -276,12 +293,51 @@ const EaseNote: FC<EaseNoteProps> = ({
 		updateConfigs(c)
 	}
 
+	const handleDoubleClick = (id) => {
+		if (isPhone) return
+
+		handleVisible(id, true)
+	}
+
+	const handleNoteClose = (id) => {
+		if (isPhone) {
+			handleList(true)
+		} else {
+			handleVisible(id, false)
+		}
+	}
+
+	// 移动端交互区分开。始终只显示一个note,和pc不干扰
+	const handlePhoneClick = (id) => {
+		if (!isPhone) return
+
+		const copyNotes = JSON.parse(JSON.stringify(notes))
+		const clickNote = copyNotes.find(n => n.id === id)
+		console.log('clickNote---', clickNote)
+		setPhoneNote(clickNote)
+		handleList(false)
+		localforage.setItem('_phoneNote_', clickNote, async () => {
+			console.warn('handlePhoneClick---setItem---', await _getItem('_phoneNote_'))
+		})
+	}
+
 	useEffect(() => {
 		getData()
 	}, [remote])
 
 	useEffect(() => {
 		getConfigs()
+
+		localforage.getItem('_phoneNote_').then(function(value) {
+			if (value) {
+				setPhoneNote(value)
+			} else {
+				handleList(true)
+			}
+		}).catch(function(err) {
+				// 当出错时，此处代码运行
+				console.log(err);
+		});
 	}, [])
 
 	useEffect(() => {
@@ -297,21 +353,22 @@ const EaseNote: FC<EaseNoteProps> = ({
 		return await localforage.getItem(key)
 	}
 
-	const displayNotes = notes.filter((n) => n.visibility)
+	const displayNotes = isPhone ? [phoneNote] : notes.filter((n) => n.visibility)
+	console.log('dddddd', displayNotes)
 
 	return (
 		<div
 			id="ease-note"
 			// style={{position: "absolute", top: "0", left: "0", right: "0", bottom: "0"}}
-			// onMouseDown={onMouseDown}
-			// onMouseUp={onMouseUp}
+			onMouseDown={onMouseDown}
+			onMouseUp={onMouseUp}
 		>
-			{displayNotes.map((n) => (
+			{!!displayNotes?.length && displayNotes[0] && displayNotes.map((n) => (
 				<Note
 					key={n.id}
 					{...n}
 					onAdd={handleAdd}
-					onClose={() => handleVisible(n.id, false)}
+					onClose={() => handleNoteClose(n.id)}
 					onDelete={() => handleDelete(n.id)}
 					onTheme={(theme) => handleTheme(n.id, theme)}
 					onList={() => handleList(true)}
@@ -328,9 +385,11 @@ const EaseNote: FC<EaseNoteProps> = ({
 				notes={notes}
 				onAdd={handleAdd}
 				onClose={() => handleList(false)}
-				onShow={(id) => handleVisible(id, true)}
+				onDoubleClick={handleDoubleClick}
 				onSetting={() => setIsShowSetting(true)}
 				onDelete={handleDelete}
+				onClick={handlePhoneClick}
+				activeId={phoneNote?.id}
 			/>
 
 			<Setting isShow={isShowSetting} onClose={() => setIsShowSetting(false)} configs={configs} onChange={handleConfigChange} />
