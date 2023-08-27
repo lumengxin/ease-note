@@ -42,6 +42,11 @@ const List: FC<ListProps> = ({
     setSearchValue('')
   }
 
+  const handleDelete = (id, e) => {
+    e.stopPropagation()
+    onDelete && onDelete(id)
+  }
+
   const renderHeader = () => {
     return (
       <div className={styles.header}>
@@ -81,9 +86,9 @@ const List: FC<ListProps> = ({
           <div className={styles.content}>
             {filterNs.map(n => (
               <div 
-                className={cn(styles.item, { [styles.hide]: !isPhone && !n.visibility }, { [styles.bar]: isPhone && n.id === activeId})} 
+                className={cn(styles.item, { [styles.hide]: !isPhone && !n.visibility }, { [styles.bar]: isPhone && n.active})} 
                 style={{background: n.theme}}
-                onDoubleClick={() => onDoubleClick(n.id)} 
+                onDoubleClick={() => onDoubleClick(n.id)}
                 onClick={() => onClick(n.id)}
               >
                 <div className={styles.top}>
@@ -92,7 +97,7 @@ const List: FC<ListProps> = ({
                     <div className={styles.time}>{n.updateTime ?? n.createTime}</div>
                   </div>
                   <div className={styles.option}>
-                    <span onClick={() => onDelete(n.id)}><i className="iconfont icon-delete"></i></span>
+                    <span onClick={(e) => handleDelete(n.id, e)}><i className="iconfont icon-delete"></i></span>
                   </div>
                 </div>
                 <div className={styles.detail}>

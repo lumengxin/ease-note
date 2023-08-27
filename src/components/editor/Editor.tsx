@@ -30,15 +30,16 @@ function Editor({content, onChange}) {
     // 编辑器配置
     const editorConfig: Partial<IEditorConfig> = { 
       placeholder: 'write your story...',
+      autoFocus: false, // 屏蔽自动onChange
     }
 
     const handleChange = (editor: IDomEditor) => {
       // 处理挂载时onChange被触发
       if (flag) {
-        console.log('editor---111', editor)
-        const contents = editor.getHtml()
+        console.log('editor---111')
+        const contents = editor?.getHtml()
         // setHtml(contents)
-        onChange && onChange(contents, editor)
+        onChange && onChange(contents)
       }
       flag = true
     }
@@ -47,13 +48,13 @@ function Editor({content, onChange}) {
     useEffect(() => {
       // 获取toolbar配置
       if (!editor) return
-      const toolbar = DomEditor.getToolbar(editor)
-      const curToolbarConfig = toolbar.getConfig()
-      console.log("toolbar ----- config", curToolbarConfig.toolbarKeys )
+      // const toolbar = DomEditor.getToolbar(editor)
+      // const curToolbarConfig = toolbar.getConfig()
+      // console.log("toolbar ----- config", curToolbarConfig.toolbarKeys )
 
       return () => {
         if (editor == null) return
-        editor.destroy()
+        editor?.destroy()
         setEditor(null)
       }
     }, [editor])
@@ -65,6 +66,7 @@ function Editor({content, onChange}) {
     return (
       <div className={styles.editor}>
         <div className={styles['editor-container']}>
+          
           <WToolbar
             className={styles['w-toolbar']}
             editor={editor}

@@ -33,7 +33,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 	const [isShowSetting, setIsShowSetting] = useState<boolean>(false)
 	const [mouseShape, setMouseShape] = useState<Shape>({ x: 0, y: 0, w: 0, h: 0 })
 	const [remote, setRemote] = useState<string>(defaultRemote)
-	const [phoneNote, setPhoneNote] = useState<INote | any>(null)
+	const [phoneNote, setPhoneNote] = useState<INote[]>([])
 
 	const generateEditor = async (shape?: Shape) => {
 		const realNotes = await _getItem('_notes_')
@@ -62,46 +62,34 @@ const EaseNote: FC<EaseNoteProps> = ({
 		setIsShowList(isShow)
 	}
 
-	const handleAdd = async () => {
+	const handleAdd = async (type = 'list') => {
 		// e.stopPropagation()
     // e.nativeEvent?.stopImmediatePropagation()
 		const note = await generateEditor()
-		createData(note)
+		createData(note, type)
 	}
 
-	const handleDelete = (id: string) => {
-		deleteData(id)
-
-		if (isPhone) {
-			setPhoneNote(null)
-			localforage.removeItem("_phoneNote_")
-			handleList(true)
-		}
+	const handleDelete = (id: string, type = 'list') => {
+		deleteData(id, type)
 	}
 
 	const handleVisible = (id: string, visible: boolean) => {
+		debugger
 		updateNotes(id, 'visibility', visible)
 	}
 
 	const handleTheme = (id: string, theme: THEME) => {
 		updateNotes(id, 'theme', theme)
-
-		// 暂时默认成功，直接更新（应该放成功回调 -> todo）
-		const newPhoneNote = {
-			...phoneNote,
-			theme
-		}
-		setPhoneNote(newPhoneNote)
 	}
 
 	const handleTitle = (id: string, title: string) => {
 		updateNotes(id, 'title', title)
 	}
 
-	const handleEditorChange = async (id, html, editor) => {
+	const handleEditorChange = async (id, html) => {
 		// 插槽嵌入的Editor, 此作用域的notes不对 -> TODO
-		// 首次挂载时也会触发
-		console.log('handleEditorChange----', id, html, editor.getText())
+		// 首次挂载时也会触发, fouce会触发
+		// console.log('handleEditorChange----', id, html, editor.getText())
 		// const isInit = !editor.getText().length
 		// 此作用域中state维护的notes状态不对
 		const realNotes = await _getItem('_notes_')
@@ -119,10 +107,18 @@ const EaseNote: FC<EaseNoteProps> = ({
 
 	const updateNotes = (id: string, attr: string, value: any, realNotes) => {
 		const curNotes = realNotes ?? notes
-		const newNotes = curNotes.filter(f => f.id === id).map((n) =>
+		let newNotes = curNotes.filter(f => f.id === id).map((n) =>
 			n.id === id ? { ...n, [attr]: value } : n,
 		)
-		updateData(newNotes)
+
+		// 激活态需要更新两条，之前激活的重置
+		if (attr === 'active') {
+			const lastActiveNote = curNotes.filter(f => f.active).map(n => {
+				return {  ...n, active: false  }
+			})
+			newNotes = [...newNotes, ...lastActiveNote]
+		}
+		updateData(newNotes, attr, value)
 	}
 
 	const onMouseDown = (e) => {
@@ -161,12 +157,15 @@ const EaseNote: FC<EaseNoteProps> = ({
 		return w > 320 && h > 320
 	}
 
-	const getData = async () => {
+	const getData = async (useCache = false) => {
 		console.log('getData--remote', remote)
-		// 先从本地取一次，渲染出页面来；然后从远程拿，比较是否有变化，有则更新
-		const localNotes = await _getItem('_notes_') as any
-		const initNotes = !!localNotes?.length ? localNotes : [{ ...DEFAULT_EDITOR, theme: THEME.PURPLE }]
-		setNotes(initNotes)
+		// 主动更新的不需要判断本地储存，主要是第一次进来判断有储存时使用缓存
+		if (useCache) {
+			// 先从本地取一次，渲染出页面来；然后从远程拿，比较是否有变化，有则更新
+			const localNotes = await _getItem('_notes_') as any
+			const initNotes = !!localNotes?.length ? localNotes : [{ ...DEFAULT_EDITOR, theme: THEME.PURPLE }]
+			setNotes(initNotes)
+		}
 
 		// 是否配置了远程 TODO
 		if (!!remote?.length) {
@@ -178,61 +177,92 @@ const EaseNote: FC<EaseNoteProps> = ({
 						zIndex: d.z_index
 					}
 				}) : []
-				const isChanged = hasDataChanged(localNotes, dbNotes)
-				if (isChanged) {
-					setNotes(dbNotes)
 
-					localforage.setItem('_notes_', dbNotes, async () => {
-						console.warn('updateData---setItem---', await _getItem('_notes_'))
-					})
+				if (useCache) {
+					const isChanged = hasDataChanged(localNotes, dbNotes)
+					if (isChanged) {
+						setNotes(dbNotes)
+					}
+				} else {
+					setNotes(dbNotes)
 				}
+				localforage.setItem('_notes_', dbNotes, async () => {
+					console.warn('updateData---setItem---', await _getItem('_notes_'))
+				})
 			}
 			
 		}
 	}
 
-	const createData = async (note) => {
+	const createData = async (note, type) => {
 		if (!!remote?.length) {
 			const res = await fetchData(`${remote}/list`, 'POST', { note })
 			if (res.code === 200) {
-				getData()
+				if (isPhone && type === 'note') {
+					const curNotes = [...notes, note]
+					updateNotes(note.id, 'active', true, curNotes)
+				} else {
+					getData()
+				}
 			}
 		}
 	}
 
-	const updateData = async (notes) => {
+	const updateData = async (notes, attr = '', value) => {
 		// 不保存没有编辑的note -> 初始content为空
 		// 定时保存 -> 节流
 		// localforage.setItem('_notes_', notes, async () => {
 		// 	console.warn('updateData---setItem---', await _getItem('_notes_'))
 		// })
 
-		if (!isMounted) {
-			if (!!remote?.length) {
-				const res = await fetchData(`${remote}/list`, 'PUT', { notes })
-				if (res.code === 200) {
-					const ns = res.data.map(d => {
-						return {
-							...d,
-							zIndex: d.z_index
-						}
-					})
-					console.log('updateData---', ns)
-					setNotes(ns)
-					localforage.setItem('_notes_', ns, async () => {
-						console.warn('updateData---setItem---', await _getItem('_notes_'))
-					})
+		// if (isMounted) {
+		// 	return
+		// }
+		if (!!remote?.length) {
+			const res = await fetchData(`${remote}/list`, 'PUT', { notes })
+			if (res.code === 200) {
+				const ns = res.data.map(d => {
+					return {
+						...d,
+						zIndex: d.z_index
+					}
+				})
+				console.log('updateData---', ns)
+				setNotes(ns)
+				localforage.setItem('_notes_', ns, async () => {
+					console.warn('updateData---setItem---', await _getItem('_notes_'))
+				})
+
+				if (isPhone) {
+					let curNote = []
+					if (attr === 'active') {
+						curNote = notes.filter(n => n.active)
+					} else if (attr === 'theme' || attr === 'content' || attr === 'title') {
+						curNote = phoneNote.map(n => {
+							return {
+								...n,
+								[attr]: value
+							}
+						})
+					}
+					handleList(false)
+					setPhoneNote(curNote)
 				}
 			}
 		}
 		isMounted = false
 	}
 
-	const deleteData = async (id) => {
+	const deleteData = async (id, type) => {
 		if (!!remote?.length) {
 			const res = await fetchData(`${remote}/list`, 'DELETE', { id })
 			if (res.code === 200) {
 				getData()
+
+			  if (isPhone && type === 'note') {
+					// setPhoneNote([])
+					handleList(true)
+				}
 			}
 		}
 	}
@@ -275,7 +305,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 				setRemote(rs)
 			}
 		} else {
-			getData()
+			getData(true)
 		}
 	}
 
@@ -310,14 +340,12 @@ const EaseNote: FC<EaseNoteProps> = ({
 	// 移动端交互区分开。始终只显示一个note,和pc不干扰
 	const handlePhoneClick = (id) => {
 		if (!isPhone) return
+		updateNotes(id, 'active', true)
+	}
 
-		const copyNotes = JSON.parse(JSON.stringify(notes))
-		const clickNote = copyNotes.find(n => n.id === id)
-		console.log('clickNote---', clickNote)
-		setPhoneNote(clickNote)
-		handleList(false)
-		localforage.setItem('_phoneNote_', clickNote, async () => {
-			console.warn('handlePhoneClick---setItem---', await _getItem('_phoneNote_'))
+	const updateLocalPhoneNote = (note) => {
+		localforage.setItem('_phoneNote_', note, async () => {
+			console.warn('updateLocalPhoneNote---_phoneNote_---', await _getItem('_phoneNote_'))
 		})
 	}
 
@@ -328,8 +356,9 @@ const EaseNote: FC<EaseNoteProps> = ({
 	useEffect(() => {
 		getConfigs()
 
-		localforage.getItem('_phoneNote_').then(function(value) {
-			if (value) {
+		localforage.getItem('_notes_').then(function(data) {
+			const value = data.filter((n) => n.active) 
+			if (value?.length > 0) {
 				setPhoneNote(value)
 			} else {
 				handleList(true)
@@ -349,11 +378,18 @@ const EaseNote: FC<EaseNoteProps> = ({
 		}
 	}, [])
 
+	// useEffect(() => {
+	// 	if (notes.length > 0) {
+	// 		const activeNote = notes.filter((n) => n.active)
+	// 		setPhoneNote(activeNote)
+	// 	}
+	// }, [notes])
+
 	const _getItem = async (key: string) => {
 		return await localforage.getItem(key)
 	}
 
-	const displayNotes = isPhone ? [phoneNote] : notes.filter((n) => n.visibility)
+	const displayNotes = isPhone ? phoneNote : notes.filter((n) => n.visibility)
 	console.log('dddddd', displayNotes)
 
 	return (
@@ -367,12 +403,12 @@ const EaseNote: FC<EaseNoteProps> = ({
 				<Note
 					key={n.id}
 					{...n}
-					onAdd={handleAdd}
+					onAdd={() => handleAdd('note')}
 					onClose={() => handleNoteClose(n.id)}
-					onDelete={() => handleDelete(n.id)}
+					onDelete={() => handleDelete(n.id, 'note')}
 					onTheme={(theme) => handleTheme(n.id, theme)}
 					onList={() => handleList(true)}
-					onEditorChange={(html, editor) => handleEditorChange(n.id, html, editor)}
+					onEditorChange={(html) => handleEditorChange(n.id, html)}
 					onDragEnd={(ps) => handleShapeEnd(n.id, ps)}
 					onResizeEnd={(ps) => handleShapeEnd(n.id, ps)}
 					onTitleChange={(title) => handleTitle(n.id, title)}
