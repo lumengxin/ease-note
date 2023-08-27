@@ -1,7 +1,7 @@
 .panel
   .panel-container
-    display: flex
-    flex-direction: column
+    // display: flex
+    // flex-direction: column
     background: var(--n-bg-color)
     &.isPhone
       left: 0!important;
@@ -13,5 +13,13 @@
     .header
       height: 32px
     .content
-      height 100%
+      // 去掉header,footer
+      height calc(100% - 32px - 32px)
       flex 1
+    .footer
+      position absolute
+      left: 0
+      right: 0
+      bottom: 0
+      height: 32px
+      // border-top: 1px solid #999

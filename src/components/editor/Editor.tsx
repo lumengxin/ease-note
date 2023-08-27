@@ -17,7 +17,6 @@ function Editor({content, onChange}) {
         "headerSelect",
         "undo",
         "redo",
-        "|",
         "bold",
         "color",
         "bulletedList",

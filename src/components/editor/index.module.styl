@@ -8,14 +8,24 @@
   flex-direction: column
   .editor-container
     // 改位置后新的滚动条时拖拽点位置问题
-    height: calc(100% - 32px)
-    overflow: auto
+    height: 100%
+    // overflow: auto
     .w-ditor
       background: blue
   .w-toolbar
+    height: 32px
     font-size: 14px
     // 配合处理滚动条拖拽点问题
     // position: absolute
     // bottom: 0
     // left: 0
     // right: 0
+  .w-editor
+    height: calc(100% - 32px)
+    overflow-y: auto
+
+
+:global(.w-e-text-container [data-slate-editor]) {
+  border-top: unset;
+  min-height: unset;
+}

@@ -44,12 +44,25 @@ const Panel: FC<PanelProps> = ({
         <Header className={cn(styles["header"], 'note-header')}  onAdd={onAdd} onClose={onClose}>
           {renderHeader && renderHeader()}
         </Header>
-        <div className={cn(styles["content"], `${id}_content`)}>
+        <div className={styles["content"]}>
           {children}
         </div>
+
+        {/* drag点击就会触发，和editor事件冲突，会引起bug; 使用footer作为拖拽点，将其分离；draggable控制拖拽区域，target控制整个面板一起 */}
+        {draggable && !isPhone && <div className={cn(styles["footer"], `${id}_footer`)}></div> }
       </div>
 
-      {!isPhone && <Drag target={`#${id}`} draggable={draggable} dragTarget={document.querySelector(`.${id}_content`)} resizable={resizable} onDragEnd={onDragEnd} onResizeEnd={onResizeEnd} container={container} />}
+      {!isPhone && (
+        <Drag 
+          target={`#${id}`} 
+          draggable={draggable} 
+          dragTarget={document.querySelector(`.${id}_footer`)} 
+          resizable={resizable} 
+          onDragEnd={onDragEnd} 
+          onResizeEnd={onResizeEnd}
+          container={container} 
+        />
+      )}
     </div>
   )
 }
