@@ -74,7 +74,6 @@ const EaseNote: FC<EaseNoteProps> = ({
 	}
 
 	const handleVisible = (id: string, visible: boolean) => {
-		debugger
 		updateNotes(id, 'visibility', visible)
 	}
 
@@ -133,7 +132,7 @@ const EaseNote: FC<EaseNoteProps> = ({
 		y = clientY
 	}
 
-	const onMouseUp = (e) => {
+	const onMouseUp = async (e) => {
 		const { clientX, clientY } = e
 
 		const newShape = {
@@ -148,23 +147,29 @@ const EaseNote: FC<EaseNoteProps> = ({
 
 		// 正确做法应该阻止Drag中拖拽事件冒泡 TODO
 		if (e.target.id === 'note-container' && isValidShape(newShape)) {
-			generateEditor(newShape)
+			const note = await generateEditor(newShape)
+			console.log('onMouseUp----', note)
+			createData(note, 'note')
 		}
 	}
 
 	const isValidShape = (shape: Shape) => {
 		const { w, h } = shape
-		return w > 320 && h > 320
+		return w > 240 && h > 240
 	}
 
 	const getData = async (useCache = false) => {
 		console.log('getData--remote', remote)
 		// 主动更新的不需要判断本地储存，主要是第一次进来判断有储存时使用缓存
+		let localNotes = []
 		if (useCache) {
 			// 先从本地取一次，渲染出页面来；然后从远程拿，比较是否有变化，有则更新
-			const localNotes = await _getItem('_notes_') as any
+			localNotes = await _getItem('_notes_') as any || []
 			const initNotes = !!localNotes?.length ? localNotes : [{ ...DEFAULT_EDITOR, theme: THEME.PURPLE }]
-			setNotes(initNotes)
+			if (localNotes?.length > 0) {
+				// 首次使用时，初始化一个没有入库，库里根据id更新会有问题
+				setNotes(initNotes)
+			}
 		}
 
 		// 是否配置了远程 TODO
@@ -357,16 +362,23 @@ const EaseNote: FC<EaseNoteProps> = ({
 		getConfigs()
 
 		localforage.getItem('_notes_').then(function(data) {
-			const value = data.filter((n) => n.active) 
-			if (value?.length > 0) {
-				setPhoneNote(value)
+			if (isPhone) {
+				const value = data.filter((n) => n.active) 
+				if (value?.length > 0) {
+					setPhoneNote(value)
+				} else {
+					handleList(true)
+				}
 			} else {
-				handleList(true)
+				if (!data?.length) {
+					handleList(true)
+				}
 			}
 		}).catch(function(err) {
 				// 当出错时，此处代码运行
 				console.log(err);
 		});
+		
 	}, [])
 
 	useEffect(() => {
