@@ -19,6 +19,7 @@ export interface EaseNoteProps {
   content: string
   theme: THEME
   container: HTMLDivElement | HTMLElement | string
+  saving: boolean
   onAdd: () => void
   onClose: () => void
   onList: () => void
@@ -28,6 +29,7 @@ export interface EaseNoteProps {
   onDragEnd: () => void
   onResizeEnd: () => void
   onTitleChange: (value: string) => void
+  onSave: () => void
 }
 
 interface Shape {
@@ -47,6 +49,7 @@ const Note: FC<EaseNoteProps> = ({
   onDragEnd,
   onResizeEnd,
   onTitleChange,
+  onSave,
   id,
   shape,
   title,
@@ -54,11 +57,14 @@ const Note: FC<EaseNoteProps> = ({
   content,
   theme,
   container,
+  saving,
   ...rest
 }) => {
   const [ resizable, setResizable ] = useState<boolean>(true)
   const [ isShowTheme, setIsShowTheme ] = useState<boolean>(false)
   const [ sTtile, setSTitle] = useState<string>('')
+  const [ isShowMore, setIsShowMore ] = useState<boolean>(false)
+
   const targetRef = useRef<HTMLDivElement>(null)
   const dragRef = useRef<ReactElement>(null)
 
@@ -83,6 +89,10 @@ const Note: FC<EaseNoteProps> = ({
     onTitleChange && onTitleChange(e.target.value)
   }
 
+  const onMore = () => {
+    setIsShowMore(!isShowMore)
+  }
+
   useEffect(() => {
     setSTitle(title)
   }, [title])
@@ -96,13 +106,27 @@ const Note: FC<EaseNoteProps> = ({
           </div>
         ) : (
           <div className={styles.center}>
+            <div className={styles.save}>
+              <span>{saving ? '保存中..' : '已保存' }</span>
+              <span><i className="iconfont icon-refresh"></i></span>
+            </div>
             <div className={styles.title}>
               <input name="title" value={sTtile} onChange={handleTitleChange} />
             </div>
             <div className={styles.options}>
               <span onClick={() => setIsShowTheme(true)}><i className="iconfont icon-theme"></i></span>
-              <span onClick={onDelete}><i className="iconfont icon-delete"></i></span>
+              {/* <span onClick={onDelete}><i className="iconfont icon-delete"></i></span> */}
               <span onClick={onList}><i className="iconfont icon-list"></i></span>
+              <span onClick={onMore}>
+                <i className="iconfont icon-more"></i>
+              </span>
+              
+              {isShowMore && <ul className={styles['more-drop']}>
+                  <li onClick={onDelete}>
+                    <i className="iconfont icon-delete"></i>
+                  </li>
+                </ul>
+              }
             </div>
           </div>
           

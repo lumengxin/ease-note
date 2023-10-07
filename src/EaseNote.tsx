@@ -15,6 +15,8 @@ let x, y
 // 第一次挂载必然会变更notes, 加标志位不同步后端notes(第一次不更新，只拿notes，后续判断是否和缓存一样再决定是否二次刷新)
 let isMounted = true
 
+let timer
+
 const isPhone = isMobile()
 
 interface EaseNoteProps {
@@ -34,6 +36,8 @@ const EaseNote: FC<EaseNoteProps> = ({
 	const [mouseShape, setMouseShape] = useState<Shape>({ x: 0, y: 0, w: 0, h: 0 })
 	const [remote, setRemote] = useState<string>(defaultRemote)
 	const [phoneNote, setPhoneNote] = useState<INote[]>([])
+	const [isChanged, setIsChanged] = useState(false)
+	const [saving, setSaving] = useState(false)
 
 	const generateEditor = async (shape?: Shape) => {
 		const realNotes = await _getItem('_notes_')
@@ -117,7 +121,17 @@ const EaseNote: FC<EaseNoteProps> = ({
 			})
 			newNotes = [...newNotes, ...lastActiveNote]
 		}
-		updateData(newNotes, attr, value)
+		// 笔记内容变更时，自动保存
+		if (attr === 'title' || attr === 'content') {
+			localforage.setItem('_notes_', newNotes, async () => {
+				console.warn('updateData---setItem---contentChange', newNotes)
+			})
+			// setNotes(newNotes)
+			setIsChanged(true)
+		} else {
+			updateData(newNotes, attr, value)
+
+		}
 	}
 
 	const onMouseDown = (e) => {
@@ -354,9 +368,42 @@ const EaseNote: FC<EaseNoteProps> = ({
 		})
 	}
 
+	const autoSaveNotes = async (id) => {
+		setSaving(true)
+		// 应该是单独维护一份需要更新的note -> todo
+		const realNotes = await _getItem('_notes_')
+		const curNotes = id ? notes.filter(n => n.id === id) : realNotes
+		console.log('autoSaveNotes----', id, curNotes)
+
+		const res = await fetchData(`${remote}/list`, 'PUT', { notes: curNotes })
+		if (res.code === 200) {
+			setIsChanged(false)
+			// 应为是编辑中的内容，此时更新后没必要getData刷新（可能又是之前死循环），list中刷新既可
+		}
+		// handleList(false)
+		setSaving(false)
+	}
+
+	const handleNoteSave = (id) => {
+		autoSaveNotes(id)
+	}
+
+	const handleShowList = () => {
+		getData()
+		handleList(true)
+	}
+
 	useEffect(() => {
 		getData()
 	}, [remote])
+
+	useEffect(() => {
+		if (isChanged) {
+			timer = setInterval(autoSaveNotes, 2 * 1000)
+		} else {
+			clearInterval(timer)
+		}
+	}, [isChanged])
 
 	useEffect(() => {
 		getConfigs()
@@ -378,6 +425,10 @@ const EaseNote: FC<EaseNoteProps> = ({
 				// 当出错时，此处代码运行
 				console.log(err);
 		});
+
+		return () => {
+			clearInterval(timer)
+		}
 		
 	}, [])
 
@@ -419,12 +470,14 @@ const EaseNote: FC<EaseNoteProps> = ({
 					onClose={() => handleNoteClose(n.id)}
 					onDelete={() => handleDelete(n.id, 'note')}
 					onTheme={(theme) => handleTheme(n.id, theme)}
-					onList={() => handleList(true)}
+					onList={handleShowList}
 					onEditorChange={(html) => handleEditorChange(n.id, html)}
 					onDragEnd={(ps) => handleShapeEnd(n.id, ps)}
 					onResizeEnd={(ps) => handleShapeEnd(n.id, ps)}
 					onTitleChange={(title) => handleTitle(n.id, title)}
 					container={container}
+					saving={saving}
+					onSave={() => handleNoteSave(n.id)}
 				/>
 			))}
 

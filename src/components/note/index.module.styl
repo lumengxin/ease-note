@@ -7,17 +7,31 @@
       display inline-block
       text-align: center
   .center
-    position relative
+    display: flex
+    align-items: center
+    justify-content: space-between
+    padding: 0 4px
     .options 
       text-align: end
       margin-right: 12px
       span
         padding 0 2px
+      .more-drop
+        position absolute
+        z-index 10
+        top 20px
+        background #fff
+        border-radius 2px
+        list-style-type none
+        padding 10px
+        li
+          padding 4px 20px
+          &:hover
+            background pink
+    .save
+      font-size: 10px
+      display: flex
     .title
-      position absolute
-      left: 0
-      right: 0
-      margin: auto
       max-width: 110px
       cursor pointer
       input
